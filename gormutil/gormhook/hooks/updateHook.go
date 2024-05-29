@@ -1,10 +1,9 @@
 package hooks
 
 import (
-	"52lu/gin-api-template/app/dao/model"
-	"52lu/gin-api-template/generate/gormutil/gormhook/hooktype"
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
+	"52lu/go-helpers/maputil"
 	"github.com/thoas/go-funk"
-	"gitlab.weimiaocaishang.com/components/go-gin/utils"
 	"gorm.io/gorm"
 )
 
@@ -49,13 +48,13 @@ func (u *updateHookPlugin) rowBeforeUpdate(tx *gorm.DB) {
 			beforeDataMap := beforeDataList[0]
 			// 过滤map中的类型零值
 			if len(afterDataMap) == len(beforeDataMap) {
-				helper.RemoveMapZeroValues(afterDataMap)
+				maputil.RemoveMapZeroValues(afterDataMap)
 			} else {
 				removeMapZeroValues(afterDataMap, beforeDataMap)
 			}
 			modifiedData = u.getModifiedData(beforeDataMap, afterDataMap)
 		}
-		changeLog := &model.DataChangeLogModel{
+		changeLog := &hooktype.DataChangeLogModel{
 			DataTable:  tx.Statement.Table,
 			DataID:     dataId,
 			Type:       RowChangeTypeUpdate,
@@ -64,7 +63,7 @@ func (u *updateHookPlugin) rowBeforeUpdate(tx *gorm.DB) {
 			After:      &afterData,
 			Modified:   &modifiedData,
 			OperateID:  u.getOperateId(ctx),
-			LogID:      utils.GetTraceId(ctx),
+			LogID:      "", //TODO
 		}
 		// 填充具体执行SQL
 		sql := tx.Dialector.Explain(tx.Statement.SQL.String(), tx.Statement.Vars...)

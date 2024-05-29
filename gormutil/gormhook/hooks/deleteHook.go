@@ -1,11 +1,7 @@
 package hooks
 
 import (
-	//"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	//"gitlab.weimiaocaishang.com/components/go-gin/utils"
-	"52lu/go-helpers/gormhelper/gormhook/hooktype"
-	"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	"gitlab.weimiaocaishang.com/components/go-gin/utils"
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"gorm.io/gorm"
 )
 
@@ -39,13 +35,13 @@ func (d *deleteHookPlugin) AddHooks() {
  */
 func (d *deleteHookPlugin) rowAfterDelete(tx *gorm.DB) {
 	execHookFunc(func(tx *gorm.DB) {
-		ctx := tx.Statement.Context
+		//ctx := tx.Statement.Context
 		var changeLog *hooktype.DataChangeLogModel
 		var err error
 		// 新增逻辑
 		changeLog, err = d.formatDeleteRowData(tx)
 		if err != nil {
-			logger.Warnf(ctx, "数据格式化处理异常:%v", err)
+			//logger.Warnf(ctx, "数据格式化处理异常:%v", err)
 			return
 		}
 		// 填充具体执行SQL
@@ -80,7 +76,7 @@ func (d *deleteHookPlugin) formatDeleteRowData(tx *gorm.DB) (*hooktype.DataChang
 		Before:     &beforeData,
 		EffectRows: int64(len(beforeDataList)),
 		OperateID:  d.getOperateId(ctx),
-		LogID:      utils.GetTraceId(ctx),
+		LogID:      "",
 	}
 	return changeLog, nil
 }

@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-const TableNameDataChangeLogModel = "cq_data_change_log"
+const TableNameDataChangeLogModel = "data_change_log"
 
 // DataChangeLogModel 数据变更日志
 type DataChangeLogModel struct {

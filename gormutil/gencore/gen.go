@@ -107,7 +107,7 @@ func (g genUtilClient) checkConf() error {
 * @Date 2024-05-28 17:17:19
  */
 func (g genUtilClient) Run() error {
-	// 生成model和query
+	//// 生成model和query
 	//modelList, err := g._runGormGen()
 	//if err != nil {
 	//	return err

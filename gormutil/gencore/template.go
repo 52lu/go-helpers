@@ -1,7 +1,8 @@
 package gencore
 
 import (
-	"52lu/gin-api-template/generate/gormutil/gencore/tmpl"
+	"52lu/go-helpers/fileutil"
+	"52lu/go-helpers/gormutil/gencore/tmpl"
 	"fmt"
 	"os"
 	"strings"
@@ -16,6 +17,10 @@ import (
 * @Date 2024-05-28 19:21:55
  */
 func (g genUtilClient) generateBaseDao() error {
+	// 判断目录是否存在，不存在则创建
+	if err := fileutil.CreatePath(g.conf.OutPath); err != nil {
+		return err
+	}
 	// 获取路径
 	filePath := fmt.Sprintf("%s/baseDao.gen.go", g.conf.OutPath)
 	pathSplit := strings.Split(g.conf.OutPath, "/")
@@ -40,11 +45,10 @@ func (g genUtilClient) generateFileByTemplate(tmpl string, data any, filePath st
 		return err
 	}
 	// 判断文件是否存在
-	if existFile(filePath) {
+	if fileutil.ExistFile(filePath) {
 		fmt.Println("File exists: ", filePath)
 		return nil
 	}
-
 	// 创建一个文件来写入生成的 Go 代码
 	file, err := os.Create(filePath)
 	if err != nil {
@@ -53,21 +57,4 @@ func (g genUtilClient) generateFileByTemplate(tmpl string, data any, filePath st
 	defer file.Close()
 	// 执行模板并将输出写入文件
 	return t.Execute(file, data)
-}
-
-/*
-* @Description: 判断文件是否存在
-* @Author: LiuQHui
-* @Param path
-* @Date 2024-05-28 18:56:20
- */
-func existFile(path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		if os.IsExist(err) {
-			return true
-		}
-		return false
-	}
-	return true
 }

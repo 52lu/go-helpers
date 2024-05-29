@@ -1,8 +1,8 @@
 package gormhook
 
 import (
-	"52lu/go-helpers/gormhelper/gormhook/hooks"
-	"52lu/go-helpers/gormhelper/gormhook/hooktype"
+	"52lu/go-helpers/gormutil/gormhook/hooks"
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"gorm.io/gorm"
 	"sync"
 )
@@ -14,7 +14,7 @@ type (
 	gormHookPlugin struct{}
 )
 
-func NewGormHookPlugin() *gormHookPlugin {
+func newGormHookPlugin() *gormHookPlugin {
 	return &gormHookPlugin{}
 }
 
@@ -48,7 +48,7 @@ func SetGlobalHookInstance(db *gorm.DB) {
 			DB:                   db,
 			FilterDiffColumnList: []string{"created_at", "updated_at"},
 		}
-		hookPlugin := NewGormHookPlugin()
+		hookPlugin := newGormHookPlugin()
 		// 设置钩子
 		hookList := []HookInterface{
 			hooks.NewCreateHook(hookPluginConf),

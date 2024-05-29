@@ -1,23 +1,24 @@
 package hooks
 
 import (
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
+	"52lu/go-helpers/jsonutil"
 	"context"
-	"cq-partner-api/app/helper"
 	"fmt"
-	"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	"gitlab.weimiaocaishang.com/components/go-utils/wmutil"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"log"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
 type commonHook struct {
+	HookPluginConf hooktype.HookPluginConf
 }
 
 var (
-	jsonUtil = wmutil.Json()
+	jsonUtil = jsonutil.Json
 )
 
 // 变更类型：1增 2改 3删
@@ -64,17 +65,8 @@ func (h commonHook) getDataId(tx *gorm.DB) int64 {
 * @Date 2024-04-09 15:26:17
  */
 func (h commonHook) getOperateId(ctx context.Context) int64 {
-	// 获取后台登录人
-	operateId := helper.GetAdminLoginAuthId(ctx)
-	if operateId != 0 {
-		return operateId
-	}
-	// 获取C端用户
-	token, err := helper.GetApiUserInfoWithToken(ctx)
-	if err != nil {
-		return 0
-	}
-	return token.Info.Id
+
+	return 0
 }
 
 /*
@@ -104,7 +96,7 @@ func (h commonHook) getConditions(db *gorm.DB) []clause.Expression {
 * @Date 2024-04-03 12:27:03
  */
 func (h commonHook) getChangeBeforeData(tx, dbConnect *gorm.DB) (int64, []map[string]interface{}) {
-	ctx := tx.Statement.Context
+	//ctx := tx.Statement.Context
 	var id int64
 	var beforeDataList []map[string]interface{}
 	// 获取查询条件
@@ -139,7 +131,7 @@ func (h commonHook) getChangeBeforeData(tx, dbConnect *gorm.DB) (int64, []map[st
 		// 将当前行的数据扫描到 map 中
 		err = dbConnect.ScanRows(rows, &rowData)
 		if err != nil {
-			logger.Warnf(ctx, "Failed to scan row: %v", err)
+			//logger.Warnf(ctx, "Failed to scan row: %v", err)
 			continue
 		}
 		// 将当前行的 map 添加到结果集中
@@ -155,4 +147,30 @@ func (h commonHook) getChangeBeforeData(tx, dbConnect *gorm.DB) (int64, []map[st
 		}
 	}
 	return id, beforeDataList
+}
+
+/*
+* @Description: 钩子通用逻辑处理
+* @Author: LiuQHui
+* @Param fn
+* @Param tx
+* @Date 2024-04-09 15:10:26
+ */
+func (h commonHook) execHookFunc(fn func(tx *gorm.DB), tx *gorm.DB) {
+	//ctx := tx.Statement.Context
+	// 异常捕获
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("数据变更记录异常：%v", r)
+		}
+	}()
+	// 哪些表变更不处理
+	if tx.Statement.Table == hooktype.TableNameDataChangeLogModel {
+		return
+	}
+	if strings.Contains(tx.Statement.Table, "_log") {
+		return
+	}
+	// 执行具体逻辑
+	fn(tx)
 }

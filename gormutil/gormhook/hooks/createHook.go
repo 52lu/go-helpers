@@ -1,11 +1,7 @@
 package hooks
 
 import (
-	"52lu/go-helpers/gormhelper/gormhook/hooktype"
-	"gitlab.weimiaocaishang.com/components/go-gin/utils"
-
-	//"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	//"gitlab.weimiaocaishang.com/components/go-gin/utils"
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"gorm.io/gorm"
 )
 
@@ -82,7 +78,7 @@ func (c *CreateHookPlugin) formatCreateRowData(tx *gorm.DB) (*hooktype.DataChang
 		Type:       RowChangeTypeCreate,
 		After:      &afterData,
 		OperateID:  c.getOperateId(ctx),
-		LogID:      utils.GetTraceId(ctx),
+		LogID:      "",
 		EffectRows: int64(len(dataMapList)),
 	}
 	return changeLog, nil

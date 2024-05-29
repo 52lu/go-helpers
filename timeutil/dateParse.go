@@ -1,10 +1,8 @@
-package timehelper
+package timeutil
 
 import (
 	"fmt"
 	"github.com/cockroachdb/errors"
-	"gitlab.weimiaocaishang.com/components/go-utils/constant"
-	"gitlab.weimiaocaishang.com/components/go-utils/errutil"
 	"strconv"
 	"strings"
 	"time"
@@ -174,7 +172,7 @@ func GetDaysOfMonth(date ...string) (int, error) {
 func GetMonthBeginAndEndDate(date ...string) ([]string, error) {
 	var dateTmp string
 	if len(date) == 0 {
-		dateTmp = time.Now().Format(constant.YYYYMMDD)
+		dateTmp = time.Now().Format(time.DateOnly)
 	} else {
 		dateTmp = date[0]
 	}
@@ -186,13 +184,13 @@ func GetMonthBeginAndEndDate(date ...string) ([]string, error) {
 	var result []string
 	// 获取第一天
 	firstDayTime := time.Date(parseDate.Year(), parseDate.Month(), 1, 0, 0, 0, 0, parseDate.Location())
-	result = append(result, firstDayTime.Format(constant.YYYYMMDD))
+	result = append(result, firstDayTime.Format(time.DateOnly))
 	// 获取月内总天数
 	_, _, daysInMonth := time.Date(parseDate.Year(), parseDate.Month()+1, 1, 0, 0, 0, 0, parseDate.Location()).Add(-24 * time.Hour).Date()
 	// 获取最后一天
 
 	lastDayTime := time.Date(parseDate.Year(), parseDate.Month(), daysInMonth, 0, 0, 0, 0, parseDate.Location())
-	result = append(result, lastDayTime.Format(constant.YYYYMMDD))
+	result = append(result, lastDayTime.Format(time.DateOnly))
 	return result, nil
 }
 
@@ -207,7 +205,7 @@ func GetMonthBeginAndEndDate(date ...string) ([]string, error) {
 func ParseDate(date string) (time.Time, error) {
 	format := GetDateFormat(date)
 	if format == "" {
-		return time.Time{}, errutil.ThrowErrorMsg("日期格式解析错误~")
+		return time.Time{}, errors.New("日期格式解析错误")
 	}
 	return time.ParseInLocation(format, date, time.Local)
 }
@@ -219,7 +217,7 @@ func ParseDate(date string) (time.Time, error) {
 * @Date 2023-05-19 18:41:17
  */
 func GetLastMonth() string {
-	return time.Now().AddDate(0, -1, 0).Format(constant.YYYYMM)
+	return time.Now().AddDate(0, -1, 0).Format("2006-01")
 }
 
 /*

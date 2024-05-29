@@ -1,7 +1,7 @@
-package jsonhelper
+package jsonutil
 
 import (
-	"52lu/go-helpers/timehelper"
+	"52lu/go-helpers/timeutil"
 	"database/sql/driver"
 	"fmt"
 	"github.com/thoas/go-funk"
@@ -115,7 +115,7 @@ func (d *Date) Scan(src interface{}) error {
 		*d = Date(time.Time{})
 		return nil
 	}
-	location, err := timehelper.ParseDate(date2)
+	location, err := timeutil.ParseDate(date2)
 	if err == nil {
 		*d = Date(location)
 		return nil
@@ -136,7 +136,7 @@ func (d *DateTime) Scan(src interface{}) error {
 		*d = DateTime(time.Time{})
 		return nil
 	}
-	location, err := timehelper.ParseDate(date2)
+	location, err := timeutil.ParseDate(date2)
 	if err == nil {
 		*d = DateTime(location)
 		return nil

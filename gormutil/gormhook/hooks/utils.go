@@ -1,13 +1,11 @@
 package hooks
 
 import (
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"fmt"
+	"github.com/cockroachdb/errors"
+	"github.com/opentracing/opentracing-go/log"
 	"github.com/thoas/go-funk"
-	"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	"gitlab.weimiaocaishang.com/components/go-utils/errutil"
-
-	//"gitlab.weimiaocaishang.com/components/go-gin/logger"
-	//"gitlab.weimiaocaishang.com/components/go-utils/errutil"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -21,19 +19,15 @@ import (
 * @Date 2024-04-09 15:10:26
  */
 func execHookFunc(fn func(tx *gorm.DB), tx *gorm.DB) {
-	ctx := tx.Statement.Context
+	//ctx := tx.Statement.Context
 	// 异常捕获
 	defer func() {
 		if r := recover(); r != nil {
-			if conf.IsProdEnv() {
-				logger.Warnf(ctx, "数据变更记录异常: %+v", errutil.ThrowErrorMsg(fmt.Sprintf("%v", r)))
-			} else {
-				logger.Errorf(ctx, "数据变更记录异常: %+v", errutil.ThrowErrorMsg(fmt.Sprintf("%v", r)))
-			}
+			log.Error(errors.New(fmt.Sprintf("数据变更记录异常：%v", r)))
 		}
 	}()
 	// 哪些表变更不处理
-	if tx.Statement.Table == model.TableNameDataChangeLogModel {
+	if tx.Statement.Table == hooktype.TableNameDataChangeLogModel {
 		return
 	}
 	if strings.Contains(tx.Statement.Table, "_log") {
@@ -43,6 +37,13 @@ func execHookFunc(fn func(tx *gorm.DB), tx *gorm.DB) {
 	fn(tx)
 }
 
+/*
+* @Description: 去除map中的零值
+* @Author: LiuQHui
+* @Param inputMap
+* @Param oldMap
+* @Date 2024-05-29 15:11:10
+ */
 func removeMapZeroValues(inputMap map[string]interface{}, oldMap map[string]interface{}) {
 	if len(inputMap) == 0 {
 		return
