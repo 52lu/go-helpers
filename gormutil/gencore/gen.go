@@ -1,6 +1,7 @@
 package gencore
 
 import (
+	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"errors"
 	"fmt"
 	"golang.org/x/text/cases"
@@ -110,10 +111,6 @@ func (g genUtilClient) checkConf() error {
 * @Date 2024-05-28 17:17:19
  */
 func (g genUtilClient) Run() error {
-	//modelStructName := "DataChangeLogModel"
-	//err := g.generateModelDao(modelStructName)
-	//fmt.Println(err)
-	//return nil
 	// 生成model和query
 	modelList, err := g._runGormGen()
 	if err != nil {
@@ -155,6 +152,14 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
 	db, err := gorm.Open(mysql.Open(g.conf.MysqlDsn))
 	if err != nil {
 		panic(fmt.Errorf("连接数据失败:%w", err))
+	}
+	// 判断是否开启日志变更记录(创建更新日志表)
+	if g.conf.UseGormHookDataLog {
+		err = db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4").
+			AutoMigrate(&hooktype.DataChangeLogModel{})
+		if err != nil {
+			fmt.Println("AutoMigrate error :", err)
+		}
 	}
 	// 设置DB
 	genInstance.UseDB(db)
@@ -202,12 +207,11 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
  */
 func (g genUtilClient) removeTablePre(tableName string) string {
 	// 去除表前缀
-	if g.conf.TablePre == "" {
-		return tableName
+	if g.conf.TablePre != "" {
+		tableName = strings.TrimPrefix(tableName, g.conf.TablePre)
 	}
-	newStr := strings.TrimPrefix(tableName, g.conf.TablePre)
-	newStr = strings.ReplaceAll(newStr, "_", " ")
-	return strings.ReplaceAll(cases.Title(language.Und).String(newStr), " ", "")
+	tableName = strings.ReplaceAll(tableName, "_", " ")
+	return strings.ReplaceAll(cases.Title(language.Und).String(tableName), " ", "")
 }
 
 /*
