@@ -1,6 +1,6 @@
 module 52lu/go-helpers
 
-go 1.21.5
+go 1.22
 
 require (
 	github.com/cockroachdb/errors v1.8.6
@@ -8,6 +8,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/thoas/go-funk v0.9.3
 	golang.org/x/text v0.15.0
+	golang.org/x/tools v0.17.0
 	gorm.io/driver/mysql v1.5.6
 	gorm.io/gen v0.3.26
 	gorm.io/gorm v1.25.10
@@ -31,7 +32,6 @@ require (
 	github.com/stretchr/testify v1.8.3 // indirect
 	golang.org/x/crypto v0.18.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
-	golang.org/x/tools v0.17.0 // indirect
 	gorm.io/datatypes v1.1.1-0.20230130040222-c43177d3cf8c // indirect
 	gorm.io/hints v1.1.0 // indirect
 	gorm.io/plugin/dbresolver v1.5.0 // indirect

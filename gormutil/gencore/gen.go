@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"golang.org/x/tools/go/packages"
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
 	"gorm.io/gorm"
+	"log"
 	"strings"
 )
 
@@ -113,12 +115,38 @@ func (g genUtilClient) Run() error {
 	//	return err
 	//}
 	//fmt.Println(modelList)
-	//  生成基类Dao
-	if err := g.generateBaseDao(); err != nil {
-		return err
-	}
+	////  生成基类Dao
+	//if err := g.generateBaseDao(); err != nil {
+	//	return err
+	//}
+
+	g.parse()
 	// todo 为每个model生成Dao
 	return nil
+}
+
+func (g genUtilClient) parse() {
+	// 加载包
+	pkgs, err := packages.Load(&packages.Config{
+		Mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes,
+		Dir:  g.conf.OutPath, // 当前目录
+	})
+	if err != nil {
+		log.Fatalf("Error loading package: %v", err)
+	}
+
+	// 处理加载的包信息
+	for _, pkg := range pkgs {
+		fmt.Printf("Package: %s\n", pkg.Name)
+		fmt.Printf("Files:\n")
+		for _, file := range pkg.GoFiles {
+			fmt.Printf("  %s\n", file)
+		}
+		fmt.Printf("Syntax:\n")
+		for _, syntax := range pkg.Syntax {
+			fmt.Printf("  %s\n", syntax.Name.Name)
+		}
+	}
 }
 
 /*
