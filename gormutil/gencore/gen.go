@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"golang.org/x/tools/go/packages"
 	"gorm.io/driver/mysql"
 	"gorm.io/gen"
 	"gorm.io/gorm"
-	"log"
+	"reflect"
 	"strings"
 )
 
@@ -24,6 +23,7 @@ type GenConfig struct {
 	TablePre    string // 表前缀
 	ModelSuffix string // 生成的mode后缀名
 	GenConf     *gen.Config
+	OverDaoFile bool // 覆盖dao文件
 }
 
 const (
@@ -36,13 +36,13 @@ const (
 * @Param cf
 * @Date 2024-05-27 18:07:12
  */
-func NewGenUtilClient(cf GenConfig) genUtilClient {
+func NewGenUtilClient(cf GenConfig) (*genUtilClient, error) {
 	if cf.OutPath == "" {
-		cf.OutPath = DefaultOutPath
+		return nil, errors.New("OutPath不能为空")
 	}
-	return genUtilClient{
+	return &genUtilClient{
 		conf: cf,
-	}
+	}, nil
 }
 
 /*
@@ -109,44 +109,31 @@ func (g genUtilClient) checkConf() error {
 * @Date 2024-05-28 17:17:19
  */
 func (g genUtilClient) Run() error {
-	//// 生成model和query
-	//modelList, err := g._runGormGen()
-	//if err != nil {
-	//	return err
-	//}
-	//fmt.Println(modelList)
-	////  生成基类Dao
-	//if err := g.generateBaseDao(); err != nil {
-	//	return err
-	//}
-
-	g.parse()
-	// todo 为每个model生成Dao
-	return nil
-}
-
-func (g genUtilClient) parse() {
-	// 加载包
-	pkgs, err := packages.Load(&packages.Config{
-		Mode: packages.NeedName | packages.NeedFiles | packages.NeedSyntax | packages.NeedTypes,
-		Dir:  g.conf.OutPath, // 当前目录
-	})
+	//modelStructName := "DataChangeLogModel"
+	//err := g.generateModelDao(modelStructName)
+	//fmt.Println(err)
+	//return nil
+	// 生成model和query
+	modelList, err := g._runGormGen()
 	if err != nil {
-		log.Fatalf("Error loading package: %v", err)
+		return err
 	}
-
-	// 处理加载的包信息
-	for _, pkg := range pkgs {
-		fmt.Printf("Package: %s\n", pkg.Name)
-		fmt.Printf("Files:\n")
-		for _, file := range pkg.GoFiles {
-			fmt.Printf("  %s\n", file)
-		}
-		fmt.Printf("Syntax:\n")
-		for _, syntax := range pkg.Syntax {
-			fmt.Printf("  %s\n", syntax.Name.Name)
-		}
+	fmt.Println(modelList)
+	//  生成基类Dao
+	if err := g.generateBaseDao(); err != nil {
+		return err
 	}
+	// 为每个model生成Dao
+	for _, item := range modelList {
+		// 使用 reflect.Indirect 解引用指针
+		modelStructNameVal := reflect.Indirect(reflect.ValueOf(item)).FieldByName("ModelStructName")
+		if !modelStructNameVal.IsValid() {
+			continue
+		}
+		modelStructName := modelStructNameVal.String()
+		_ = g.generateModelDao(modelStructName)
+	}
+	return nil
 }
 
 /*
@@ -194,6 +181,7 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
 	genInstance.WithDataTypeMap(dataTypeCustomMap)
 	// 创建全部模型文件, 并覆盖前面创建的同名模型
 	modelList = genInstance.GenerateAllTable()
+	//return modelList, nil
 	// 生成基础函数
 	genInstance.ApplyBasic(modelList...)
 	// 填充常用SQL
