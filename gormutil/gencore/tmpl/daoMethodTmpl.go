@@ -1,7 +1,7 @@
 package tmpl
 
-// dao通用方法
-const DaoCommonMethod = `
+// dao通用方法(表有id的方法)
+const DaoCommonByIdMethod = `
 
 /*
 * @Description: 根据id更新字段，value可以是map[string]interface{}|model
@@ -29,5 +29,4 @@ func ({{.ReceiverPre}} {{.DaoName}}) UpdateById(id int64,values interface{}) err
 func ({{.ReceiverPre}} {{.DaoName}}) FindById(id int64) (*model.{{.ModelName}}, error)  {
 	return {{.ReceiverPre}}.query.FindById(id)
 }
-
 `

@@ -28,10 +28,6 @@ type GenConfig struct {
 	UseGormHookDataLog bool // 是否开启表修改日志(更新表的记录)都会被记录
 }
 
-const (
-	DefaultOutPath = "./app/dao/query"
-)
-
 /*
 * @Description: 生成客户端
 * @Author: LiuQHui
@@ -124,12 +120,28 @@ func (g genUtilClient) Run() error {
 	// 为每个model生成Dao
 	for _, item := range modelList {
 		// 使用 reflect.Indirect 解引用指针
-		modelStructNameVal := reflect.Indirect(reflect.ValueOf(item)).FieldByName("ModelStructName")
+		reflectIndirect := reflect.Indirect(reflect.ValueOf(item))
+		modelStructNameVal := reflectIndirect.FieldByName("ModelStructName")
 		if !modelStructNameVal.IsValid() {
 			continue
 		}
 		modelStructName := modelStructNameVal.String()
-		_ = g.generateModelDao(modelStructName)
+		// 获取字段
+		var tableColumns []string
+		fields := reflectIndirect.FieldByName("Fields")
+		if fields.IsValid() {
+			for i := 0; i < fields.Len(); i++ {
+				fieldItem := fields.Index(i)
+				// 使用 reflect.Indirect 解引用 *LikeItem 指针
+				fieldItem = reflect.Indirect(fieldItem)
+				// 获取字段信息
+				columnNameVal := fieldItem.FieldByName("ColumnName")
+				if columnNameVal.IsValid() {
+					tableColumns = append(tableColumns, columnNameVal.String())
+				}
+			}
+		}
+		_ = g.generateModelDao(modelStructName, tableColumns)
 	}
 	return nil
 }

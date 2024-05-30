@@ -5,6 +5,7 @@ import (
 	"52lu/go-helpers/gormutil/gencore/tmpl"
 	"52lu/go-helpers/strutil"
 	"fmt"
+	"github.com/thoas/go-funk"
 	"golang.org/x/tools/go/packages"
 	"log"
 	"os"
@@ -46,7 +47,7 @@ var (
 * @Param modelName
 * @Date 2024-05-30 11:20:03
  */
-func (g genUtilClient) generateModelDao(modelName string) error {
+func (g genUtilClient) generateModelDao(modelName string, tableColumns []string) error {
 	// 判断目录是否存在，不存在则创建
 	if err := fileutil.CreatePath(g.conf.OutPath); err != nil {
 		return err
@@ -91,8 +92,12 @@ func (g genUtilClient) generateModelDao(modelName string) error {
 	// 获取路径
 	filePath := fmt.Sprintf("%s/%v.go", daoPath, strutil.ToLowerFirstEachWord(tmplVar.DaoName))
 
-	mergeTmpl := tmpl.DefaultDaoTemplate + tmpl.DaoCommonMethod
-	return g.generateFileByTemplate(mergeTmpl, tmplVar, filePath)
+	// 获取
+	tmplStr := tmpl.DefaultDaoTemplate
+	if funk.ContainsString(tableColumns, "id") {
+		tmplStr += tmpl.DaoCommonByIdMethod
+	}
+	return g.generateFileByTemplate(tmplStr, tmplVar, filePath)
 }
 
 /*

@@ -48,4 +48,15 @@ func ({{.ReceiverPre}} {{.DaoName}}) GetTransQueryDao(tx *query.Query) {{.DaoNam
 		query: tx.WithContext({{.ReceiverPre}}.ctx).{{.ModelName}},
 	}
 }
+
+/*
+* @Description: 数据保存或更新(表存在唯一索引，则会触发更新)
+* @Author: gorm.io/gen
+* @Param row
+* @Return error
+* @Date {{.DateTime}}
+ */
+func ({{.ReceiverPre}} {{.DaoName}}) Save(row ...*model.{{.ModelName}}) error {
+	return {{.ReceiverPre}}.query.Save(row...)
+}
 `
