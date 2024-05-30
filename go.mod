@@ -1,6 +1,6 @@
 module 52lu/go-helpers
 
-go 1.22
+go 1.20
 
 require (
 	github.com/cockroachdb/errors v1.8.6
