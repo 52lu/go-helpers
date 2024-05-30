@@ -18,12 +18,13 @@ type genUtilClient struct {
 
 type GenConfig struct {
 	// 数据库连接-> 用户:密码@tcp(ip:port)/db?charset=utf8mb4&parseTime=true&loc=Local
-	MysqlDsn    string
-	OutPath     string // 输出目录
-	TablePre    string // 表前缀
-	ModelSuffix string // 生成的mode后缀名
-	GenConf     *gen.Config
-	OverDaoFile bool // 覆盖dao文件
+	MysqlDsn           string
+	OutPath            string // 输出目录
+	TablePre           string // 表前缀
+	ModelSuffix        string // 生成的mode后缀名
+	GenConf            *gen.Config
+	OverDaoFile        bool // 覆盖dao文件
+	UseGormHookDataLog bool // 是否开启表修改日志(更新表的记录)都会被记录
 }
 
 const (

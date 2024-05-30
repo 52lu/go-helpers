@@ -33,7 +33,7 @@ var (
 func NewWithHookConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
 	syncOnceHook.Do(func() {
 		// 获取连接池
-		hookDB, err = getdbConnectPool(dsnOption...)
+		hookDB, err = getDBConnectPool(dsnOption...)
 		if err != nil {
 			panic(err)
 		}
@@ -53,7 +53,7 @@ func NewWithHookConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
 func NewDefaultConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
 	syncOnceDefault.Do(func() {
 		// 连接数据库
-		defaultDB, err = getdbConnectPool(dsnOption...)
+		defaultDB, err = getDBConnectPool(dsnOption...)
 		if err != nil {
 			panic(err)
 		}
@@ -88,32 +88,13 @@ func NewDaoQuerySession(ctx context.Context,dsnOption ...string) *queryCtx {
 }
 
 /*
-* @Description: dao事务query,带钩子
-* @Author: LiuQHui
-* @Param dsnOption
-* @Date {{.DateTime}}
- */
-func NewTransDaoWithHookQuery( dsnOption ...string) *Query {
-	return Use(NewWithHookConnect(context.Background(),dsnOption...))
-}
-/*
-* @Description:  dao事务query,不带钩子
-* @Author: LiuQHui
-* @Param dsnOption
-* @Date {{.DateTime}}
- */
-func NewTransDaoQuery( dsnOption ...string) *Query {
-	return Use(NewDefaultConnect(context.Background(),dsnOption...))
-}
-
-/*
 * @Description: 获取连接池
 * @Author: gorm.io/gen
 * @Param ctx
 * @Return *gorm.DB
 * @Date {{.DateTime}}
  */
-func getdbConnectPool(dsnOption ...string) (*gorm.DB, error) {
+func getDBConnectPool(dsnOption ...string) (*gorm.DB, error) {
 	var mysqlDsn string
 	if len(dsnOption) > 0 {
 		mysqlDsn = dsnOption[0]

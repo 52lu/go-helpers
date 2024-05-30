@@ -24,11 +24,15 @@ type {{.DaoName}} struct {
 * @Date {{.DateTime}}
  */
 func New{{.DaoName}}(ctx context.Context) {{.DaoName}} {
-	return {{.DaoName}}{
-		ctx:         ctx,
-		connect:     query.NewDefaultConnect(ctx),
-		query:       query.NewDaoQuerySession(ctx).{{.ModelName}},
-	}
+{{if .UseGormHookDataLog}}    return {{.DaoName}}{
+		ctx:     ctx,
+		connect: query.NewWithHookConnect(ctx),
+		query:   query.NewDaoQueryWithHookSession(ctx).{{.ModelName}},
+	}{{else}}    return {{.DaoName}}{
+		ctx:     ctx,
+		connect: query.NewDefaultConnect(ctx),
+		query:   query.NewDaoQuerySession(ctx).{{.ModelName}},
+	}{{end}}
 }
 
 /*

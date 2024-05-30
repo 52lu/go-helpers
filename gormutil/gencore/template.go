@@ -79,13 +79,14 @@ func (g genUtilClient) generateModelDao(modelName string) error {
 	daoPath := strings.Join(pathSplit, "/")
 
 	tmplVar := tmpl.ModelDaoVar{
-		PackageName:  packageName,
-		DateTime:     time.Now().Format(time.DateTime),
-		ModelPkgPath: modelPkgPath,
-		QueryPkgPath: queryPkgPath,
-		ModelName:    modelName,
-		ReceiverPre:  strings.ToLower(modelName[0:1]),
-		DaoName:      strings.ReplaceAll(modelName, g.conf.ModelSuffix, "") + "Dao",
+		UseGormHookDataLog: g.conf.UseGormHookDataLog,
+		PackageName:        packageName,
+		DateTime:           time.Now().Format(time.DateTime),
+		ModelPkgPath:       modelPkgPath,
+		QueryPkgPath:       queryPkgPath,
+		ModelName:          modelName,
+		ReceiverPre:        strings.ToLower(modelName[0:1]),
+		DaoName:            strings.ReplaceAll(modelName, g.conf.ModelSuffix, "") + "Dao",
 	}
 	// 获取路径
 	filePath := fmt.Sprintf("%s/%v.go", daoPath, strutil.ToLowerFirstEachWord(tmplVar.DaoName))
