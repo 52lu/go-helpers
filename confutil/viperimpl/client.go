@@ -2,7 +2,6 @@ package viperimpl
 
 import (
 	"52lu/go-helpers/confutil/conftype"
-	"fmt"
 	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"
@@ -32,8 +31,6 @@ func NewViperConfInstance(cf conftype.ConfigParseConf) *viperParseInstance {
 		// 提取文件名和扩展名
 		filename := filepath.Base(cf.ConfigFile) // 提取文件名（包括扩展名）
 		extension := filepath.Ext(cf.ConfigFile) // 提取扩展名
-		fmt.Println("fileName:", filename[:len(filename)-len(extension)])
-		fmt.Println("extension:", strings.ReplaceAll(extension, ".", ""))
 		// 设置配置文件名，没有后缀
 		viperInstance.SetConfigName(filename[:len(filename)-len(extension)])
 		// 设置读取文件格式
