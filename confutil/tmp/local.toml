@@ -1,0 +1,70 @@
+app_name = "hello"
+app_env = "local"
+app_addr = "127.0.0.1:8100"
+
+
+[apollo]
+server = "http://127.0.0.1:8100/apollo"
+cluster = "default"
+appid = "appid-demo"
+namespace = "100.go-service,app.json,application"
+log = "./logs/apollo.log"
+
+[database.default]
+driver = "mysql"
+connection = "root:root@127.0.0.1/test?charset=utf8mb4&parseTime=true&loc=Local"
+prefix = "test_"
+log_level = 4
+console_log = true
+[database.default.pool]
+max_idle_conns = 20
+max_open_conns = 60
+conn_max_lifetime = "1s"
+
+[redis.default]
+addr = "127.0.0.1:6379"
+db = 6
+password = ""
+prefix = "partner:"
+
+
+[[logger.default]]
+level = "debug"
+filename = "./logs/tmp.log"
+maxFiles = 30
+compress = true
+outformat = "json"
+
+
+#链路追踪
+[jaeger]
+enable = false
+service_name = "TestApi"
+udp_addr = ""
+http_addr = "http://127.0.0.1:14268/api/traces"
+# 采样器; const:始终采集或者不采集; probabilistic:随机采样
+type = "const"
+# 1=全采样、0=不采样
+param = 1
+# -1:debug 0:info 1:Warn 2:Error
+level = 0
+# 开启上报日志
+log_spans = false
+
+#MQ信息
+[mq]
+endpoint = "http://127.0.0.1:90899"
+access_key_id = "KSJKHDKHJD10010010"
+access_key_secret = "FxX0002341WJ03434343hKT"
+instance_id = "MQ_INST_193989199390_VjmhHdQ"
+
+# 监听支付中心
+[mq.pay_notify]
+topic = "test-topic"
+group_id = "GID_test"
+#一次最多消费x条最多可设置为16条
+num_of_message = 3
+#长轮询等待间隔,最多可设置为30秒
+wait_seconds = 3
+
+
