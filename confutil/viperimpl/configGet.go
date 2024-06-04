@@ -1,4 +1,4 @@
-package vipercore
+package viperimpl
 
 import "time"
 

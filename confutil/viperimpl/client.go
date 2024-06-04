@@ -1,4 +1,4 @@
-package vipercore
+package viperimpl
 
 import (
 	"52lu/go-helpers/confutil/conftype"

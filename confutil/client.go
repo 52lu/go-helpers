@@ -2,7 +2,7 @@ package confutil
 
 import (
 	"52lu/go-helpers/confutil/conftype"
-	"52lu/go-helpers/confutil/vipercore"
+	"52lu/go-helpers/confutil/viperimpl"
 	"fmt"
 )
 
@@ -26,7 +26,7 @@ func NewConfigParseClient(conf conftype.ConfigParseConf) (*configParseClient, er
 	}
 	// 实例化实现
 	_client = &configParseClient{
-		impl: vipercore.NewViperConfInstance(conf),
+		impl: viperimpl.NewViperConfInstance(conf),
 	}
 	return _client, nil
 }
