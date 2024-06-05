@@ -126,6 +126,17 @@ func (g genUtilClient) Run() error {
 			continue
 		}
 		modelStructName := modelStructNameVal.String()
+		// 表名称
+		tableNameVal := reflectIndirect.FieldByName("TableName")
+		if !tableNameVal.IsValid() {
+			continue
+		}
+		tableName := tableNameVal.String()
+		// 去除表前缀
+		if g.conf.TablePre != "" {
+			tableName = strings.TrimPrefix(tableName, g.conf.TablePre)
+		}
+
 		// 获取字段
 		var tableColumns []string
 		fields := reflectIndirect.FieldByName("Fields")
@@ -141,7 +152,7 @@ func (g genUtilClient) Run() error {
 				}
 			}
 		}
-		_ = g.generateModelDao(modelStructName, tableColumns)
+		_ = g.generateModelDao(modelStructName, tableName, tableColumns)
 	}
 	return nil
 }
@@ -184,7 +195,10 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
 	})
 	// 文件命名规则
 	genInstance.WithFileNameStrategy(func(tableName string) (fileName string) {
-		return firstLower(g.removeTablePre(tableName))
+		if g.conf.TablePre != "" {
+			tableName = strings.TrimPrefix(tableName, g.conf.TablePre)
+		}
+		return firstLower(tableName)
 	})
 
 	// 自定义字段的数据类型

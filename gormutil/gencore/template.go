@@ -3,7 +3,6 @@ package gencore
 import (
 	"52lu/go-helpers/fileutil"
 	"52lu/go-helpers/gormutil/gencore/tmpl"
-	"52lu/go-helpers/strutil"
 	"fmt"
 	"github.com/thoas/go-funk"
 	"golang.org/x/tools/go/packages"
@@ -28,7 +27,7 @@ func (g genUtilClient) generateBaseDao() error {
 		return err
 	}
 	// 获取路径
-	filePath := fmt.Sprintf("%s/baseDao.gen.go", g.conf.OutPath)
+	filePath := fmt.Sprintf("%s/base_dao.gen.go", g.conf.OutPath)
 	pathSplit := strings.Split(g.conf.OutPath, "/")
 	return g.generateFileByTemplate(tmpl.DefaultBaseDaoTemplate, tmpl.BaseDaoTemplateVar{
 		PackageName: pathSplit[len(pathSplit)-1],
@@ -47,7 +46,7 @@ var (
 * @Param modelName
 * @Date 2024-05-30 11:20:03
  */
-func (g genUtilClient) generateModelDao(modelName string, tableColumns []string) error {
+func (g genUtilClient) generateModelDao(modelName string, tableName string, tableColumns []string) error {
 	// 判断目录是否存在，不存在则创建
 	if err := fileutil.CreatePath(g.conf.OutPath); err != nil {
 		return err
@@ -90,7 +89,7 @@ func (g genUtilClient) generateModelDao(modelName string, tableColumns []string)
 		DaoName:            strings.ReplaceAll(modelName, g.conf.ModelSuffix, "") + "Dao",
 	}
 	// 获取路径
-	filePath := fmt.Sprintf("%s/%v.go", daoPath, strutil.ToLowerFirstEachWord(tmplVar.DaoName))
+	filePath := fmt.Sprintf("%s/%v_dao.go", daoPath, tableName)
 
 	// 获取
 	tmplStr := tmpl.DefaultDaoTemplate
