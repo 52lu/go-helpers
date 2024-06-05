@@ -15,10 +15,10 @@ func initConfig() error {
 		ParseMethod: conftype.ParseMethodTypeViper,
 		ApolloConf: &conftype.ApolloConfig{
 			Enable:           true,
-			ServiceUrl:       "http://test-apollo.weimiaocaishang.com",
+			ServiceUrl:       "http://xxxx",
 			Cluster:          "default",
-			AppId:            "cq-partner-api",
-			Namespaces:       []string{"application", "100.go-service", "app.json"},
+			AppId:            "appid",
+			Namespaces:       []string{"application", "app.json"},
 			IsBackupConfig:   true,
 			BackupConfigPath: "./tmp",
 		},
