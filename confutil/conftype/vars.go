@@ -30,11 +30,17 @@ type ConfigParseConf struct {
 	ApolloConf  *ApolloConfig   // apollo配置
 }
 
+// Apollo配置
 type ApolloConfig struct {
-	ServiceUrl string   `json:"service_url"` // apollo服务地址
-	Cluster    string   `json:"cluster"`     // 集群
-	AppId      string   `json:"app_id"`      // appId
-	Namespaces []string `json:"namespaces"`  // 命名空间
+	Enable            bool     `json:"enable"`              // 是否启用Apollo配置
+	ServiceUrl        string   `json:"service_url"`         // apollo服务地址
+	Cluster           string   `json:"cluster"`             // 集群
+	AppId             string   `json:"app_id"`              // appId
+	Secret            string   `json:"secret"`              // 安全模式下客户端需要的访问密钥
+	SyncServerTimeout int      `json:"sync_server_timeout"` // 同步配置服务的超时时间,默认为10秒
+	Namespaces        []string `json:"namespaces"`          // 命名空间
+	IsBackupConfig    bool     `json:"is_backup_config"`    // 是否从备份区获取配置。默认为 false
+	BackupConfigPath  string   `json:"backup_config_path"`  // 备份配置文件路径
 }
 
 type ParseMethodType string

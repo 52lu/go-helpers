@@ -1,8 +1,8 @@
 package confutil
 
 import (
+	"52lu/go-helpers/confutil/confcore/viperimpl"
 	"52lu/go-helpers/confutil/conftype"
-	"52lu/go-helpers/confutil/viperimpl"
 	"fmt"
 )
 

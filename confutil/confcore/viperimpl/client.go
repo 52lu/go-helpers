@@ -1,10 +1,12 @@
 package viperimpl
 
 import (
+	"52lu/go-helpers/confutil/confcore/apolloconf"
 	"52lu/go-helpers/confutil/conftype"
 	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 type viperParseInstance struct {
@@ -42,7 +44,6 @@ func NewViperConfInstance(cf conftype.ConfigParseConf) *viperParseInstance {
 			}
 		}
 	}
-
 	return &viperParseInstance{
 		conf:  cf,
 		viper: viperInstance,
@@ -61,5 +62,57 @@ func (v *viperParseInstance) Parse() error {
 	if err != nil {
 		return err
 	}
+	// 是否开启apollo
+	if v.conf.ApolloConf != nil && v.conf.ApolloConf.Enable {
+		// 合并apollo配置
+		err = v.mergeApollo()
+	}
+	return err
+}
+
+/*
+* @Description: 更新配置
+* @Author: LiuQHui
+* @Receiver v
+* @Param confMap
+* @Return error
+* @Date 2024-06-05 14:36:21
+ */
+func (v *viperParseInstance) UpdateConf(confMap map[string]interface{}) error {
+	v._updateViper(confMap)
 	return nil
+}
+
+/*
+* @Description: heb
+* @Author: LiuQHui
+* @Receiver v
+* @Return error
+* @Date 2024-06-05 14:28:13
+ */
+func (v *viperParseInstance) mergeApollo() error {
+	client := apolloconf.NewApolloConfClient(v.conf.ApolloConf)
+	client.SetConfigChangeNotifyImpl(v)
+	err := client.Start()
+	if err != nil {
+		return err
+	}
+	for _, namespace := range v.conf.ApolloConf.Namespaces {
+		confMap, _ := client.GetConfMapByNamespace(namespace)
+		if len(confMap) == 0 {
+			continue
+		}
+		v._updateViper(confMap)
+	}
+	return nil
+}
+
+func (v *viperParseInstance) _updateViper(confMap map[string]interface{}) {
+	var lock sync.Mutex
+	// 合并到viper
+	for key, val := range confMap {
+		lock.Lock()
+		v.viper.Set(key, val)
+		lock.Unlock()
+	}
 }

@@ -4,30 +4,52 @@ import (
 	"52lu/go-helpers/confutil/conftype"
 	"fmt"
 	"testing"
+	"time"
 )
 
-func TestParse(t *testing.T) {
+func initConfig() error {
 	// 解析配置
 	client, err := NewConfigParseClient(conftype.ConfigParseConf{
 		ConfigPaths: []string{"./tmp"},
 		ConfigFile:  "local.toml",
-		//ConfigFile:  "/Users/hui/ProjectSpace/GoItem/go-helpers/confutil/tmp/local.toml",
 		ParseMethod: conftype.ParseMethodTypeViper,
-		ApolloConf:  nil,
+		ApolloConf: &conftype.ApolloConfig{
+			Enable:           true,
+			ServiceUrl:       "http://test-apollo.weimiaocaishang.com",
+			Cluster:          "default",
+			AppId:            "cq-partner-api",
+			Namespaces:       []string{"application", "100.go-service", "app.json"},
+			IsBackupConfig:   true,
+			BackupConfigPath: "./tmp",
+		},
 	})
 	if err != nil {
-		t.Error(err)
-		return
+		return err
 	}
 	err = client.ParseConfig()
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func TestParse(t *testing.T) {
+	// 配置初始化
+	err := initConfig()
+	if err != nil {
 		t.Error(err)
 		return
 	}
-	// 读取配置
-	fmt.Println("获取key app_name:", GetString("app_name"))
-	fmt.Println("获取整个节点:", Get("apollo"))
-	fmt.Println("获取mq节点下的具体key:", Get("mq.access_key_id"))
-	databaseList := Get("database")
-	fmt.Println(databaseList)
+	s := GetString("common_conf")
+	fmt.Println(s)
+	fmt.Println("获取key ENABLE_SWITH_TYPE:", GetInt64("ENABLE_SWITH_TYPE"))
+	for true {
+		time.Sleep(time.Second)
+		fmt.Println("获取key ENABLE_SWITH_TYPE:", GetInt64("ENABLE_SWITH_TYPE"))
+
+		fmt.Println("获取---test_env:", GetStringSlice("test_env"))
+		fmt.Println("获取---api.url:", GetString("api.url"))
+	}
+
+	fmt.Println("ok")
 }
