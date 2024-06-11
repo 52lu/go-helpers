@@ -1,7 +1,7 @@
 package hooks
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
 	"gorm.io/gorm"
 )
 

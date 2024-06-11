@@ -1,9 +1,9 @@
 package jsonutil
 
 import (
-	"52lu/go-helpers/timeutil"
 	"database/sql/driver"
 	"fmt"
+	"github.com/52lu/go-helpers/timeutil"
 	"github.com/thoas/go-funk"
 	"strings"
 	"time"

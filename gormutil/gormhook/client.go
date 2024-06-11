@@ -1,8 +1,8 @@
 package gormhook
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooks"
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooks"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
 	"gorm.io/gorm"
 	"sync"
 )

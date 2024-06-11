@@ -1,8 +1,8 @@
 package apolloconf
 
 import (
-	"52lu/go-helpers/jsonutil"
 	"fmt"
+	"github.com/52lu/go-helpers/jsonutil"
 	"github.com/apolloconfig/agollo/v4/storage"
 	"sync"
 )

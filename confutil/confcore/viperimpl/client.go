@@ -1,8 +1,8 @@
 package viperimpl
 
 import (
-	"52lu/go-helpers/confutil/confcore/apolloconf"
-	"52lu/go-helpers/confutil/conftype"
+	"github.com/52lu/go-helpers/confutil/confcore/apolloconf"
+	"github.com/52lu/go-helpers/confutil/conftype"
 	"github.com/spf13/viper"
 	"path/filepath"
 	"strings"

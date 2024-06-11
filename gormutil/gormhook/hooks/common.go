@@ -1,10 +1,10 @@
 package hooks
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
-	"52lu/go-helpers/jsonutil"
 	"context"
 	"fmt"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
+	"github.com/52lu/go-helpers/jsonutil"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"log"

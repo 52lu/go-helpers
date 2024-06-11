@@ -1,8 +1,8 @@
 package confutil
 
 import (
-	"52lu/go-helpers/confutil/conftype"
 	"fmt"
+	"github.com/52lu/go-helpers/confutil/conftype"
 	"testing"
 	"time"
 )

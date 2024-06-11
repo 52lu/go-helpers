@@ -1,9 +1,9 @@
 package gencore
 
 import (
-	"52lu/go-helpers/fileutil"
-	"52lu/go-helpers/gormutil/gencore/tmpl"
 	"fmt"
+	"github.com/52lu/go-helpers/fileutil"
+	"github.com/52lu/go-helpers/gormutil/gencore/tmpl"
 	"github.com/thoas/go-funk"
 	"golang.org/x/tools/go/packages"
 	"log"

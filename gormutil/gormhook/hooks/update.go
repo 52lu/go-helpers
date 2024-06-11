@@ -1,8 +1,8 @@
 package hooks
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
-	"52lu/go-helpers/maputil"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
+	"github.com/52lu/go-helpers/maputil"
 	"github.com/thoas/go-funk"
 	"gorm.io/gorm"
 )

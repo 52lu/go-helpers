@@ -1,8 +1,8 @@
 package hooks
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"fmt"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
 	"github.com/cockroachdb/errors"
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/thoas/go-funk"

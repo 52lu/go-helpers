@@ -1,4 +1,4 @@
-module 52lu/go-helpers
+module github.com/52lu/go-helpers
 
 go 1.20
 

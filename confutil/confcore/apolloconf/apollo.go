@@ -1,9 +1,9 @@
 package apolloconf
 
 import (
-	"52lu/go-helpers/confutil/conftype"
-	"52lu/go-helpers/jsonutil"
 	"fmt"
+	"github.com/52lu/go-helpers/confutil/conftype"
+	"github.com/52lu/go-helpers/jsonutil"
 	"github.com/apolloconfig/agollo/v4"
 	"github.com/apolloconfig/agollo/v4/component/log"
 	"github.com/apolloconfig/agollo/v4/env/config"

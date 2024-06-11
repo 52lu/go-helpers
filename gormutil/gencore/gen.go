@@ -1,9 +1,9 @@
 package gencore
 
 import (
-	"52lu/go-helpers/gormutil/gormhook/hooktype"
 	"errors"
 	"fmt"
+	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"gorm.io/driver/mysql"
