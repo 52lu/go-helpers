@@ -31,8 +31,8 @@ type UserParam struct {
  */
 func TestValidateStruct(t *testing.T) {
 	tmp := UserParam{
-		Name: "",
-		Age:  0,
+		Name: "张三",
+		Age:  20,
 	}
 	err := ValidateStruct(tmp)
 	if err != nil {
