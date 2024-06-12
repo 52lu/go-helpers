@@ -17,9 +17,10 @@ type httpServer struct {
 }
 
 type HttpServerConfig struct {
-	Port           int                  // 端口
-	MiddlewareList []gin.HandlerFunc    // 中间件
-	RouterFunc     []RouterRegisterFunc // 路由函数
+	Port             int                  // 端口
+	DelayExistSecond int                  // 延迟多久退出，用于平滑重启
+	MiddlewareList   []gin.HandlerFunc    // 中间件
+	RouterFunc       []RouterRegisterFunc // 路由函数
 }
 
 type RouterRegisterFunc func(*gin.Engine)
@@ -88,6 +89,7 @@ func (h *httpServer) Start() {
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	// 上下文用于通知服务器有 5 秒的时间来完成当前正在处理的请求;平滑重启防止直接终端服务
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {

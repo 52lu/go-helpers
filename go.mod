@@ -6,6 +6,7 @@ require (
 	github.com/apolloconfig/agollo/v4 v4.4.0
 	github.com/cockroachdb/errors v1.8.6
 	github.com/gin-gonic/gin v1.10.0
+	github.com/guanguans/id-validator v1.3.0
 	github.com/json-iterator/go v1.1.12
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/panjf2000/ants/v2 v2.9.1
