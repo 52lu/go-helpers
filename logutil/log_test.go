@@ -11,7 +11,7 @@ func TestDemo(t *testing.T) {
 	SetLogger(LogConfig{
 		Path:           "./logs",
 		Level:          LogLevelDebug,
-		FilePrefix:     "app",
+		FileName:       "app",
 		FileTimeFormat: time.DateOnly,
 		OutFormat:      OutFormatJson,
 		LumberJackConf: LumberJackConfig{

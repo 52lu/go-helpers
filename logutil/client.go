@@ -2,7 +2,6 @@ package logutil
 
 import (
 	"context"
-	"github.com/52lu/go-helpers/jsonutil"
 )
 
 var (
@@ -99,15 +98,15 @@ func (l loggerClient) writeContentF(ctx context.Context, loglevel string, messag
 func (l loggerClient) writeMapContent(ctx context.Context, loglevel string, message string, content map[string]interface{}) {
 	sugar := l.zapLoggerClient.zapLogger.Sugar()
 	defer sugar.Sync()
-	tmpContent, _ := jsonutil.Json.MarshalToString(content)
+	key := "body"
 	switch loglevel {
 	case LogLevelDebug:
-		sugar.Debug(message, tmpContent)
+		sugar.Debugw(message, key, content)
 	case LogLevelInfo:
-		sugar.Info(message, tmpContent)
+		sugar.Infow(message, key, content)
 	case LogLevelWarn:
-		sugar.Warn(message, tmpContent)
+		sugar.Warnw(message, key, content)
 	case LogLevelError:
-		sugar.Error(message, tmpContent)
+		sugar.Errorw(message, key, content)
 	}
 }

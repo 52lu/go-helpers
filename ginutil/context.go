@@ -2,6 +2,7 @@ package ginutil
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -56,6 +57,24 @@ func GetBeginTimeMilli(ctx context.Context) int64 {
 		return value
 	}
 	return 0
+}
+
+/*
+* @Description: 获取耗时
+* @Author: LiuQHui
+* @Param ctx
+* @Return string
+* @Date 2024-06-12 18:34:41
+ */
+func GetUseTime(ctx context.Context) string {
+	// 计算耗时
+	beginTime := GetBeginTimeMilli(ctx)
+	if beginTime == 0 {
+		return ""
+	}
+	useTimeInt64 := time.Now().UnixMilli() - beginTime
+	useTime := time.Duration(useTimeInt64) * time.Millisecond
+	return fmt.Sprintf(" %.3f", useTime.Seconds())
 }
 
 /*

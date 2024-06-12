@@ -2,11 +2,9 @@ package logutil
 
 import (
 	"context"
-	"fmt"
 	"github.com/52lu/go-helpers/ginutil"
 	"go.uber.org/zap"
 	"sync"
-	"time"
 )
 
 var (
@@ -46,20 +44,30 @@ func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClien
 	zapLogger := zapClient.zapLogger
 	var zapFields []zap.Field
 
-	if ginutil.GetTractId(ctx) != "" {
-		zapFields = append(zapFields, zap.String("trace_id", ginutil.GetTractId(ctx)))
+	// traceId
+	tractId := ginutil.GetTractId(ctx)
+	if tractId != "" {
+		zapFields = append(zapFields, zap.String("trace_id", tractId))
 	}
-	if computeUseTime(ctx) != "" {
-		zapFields = append(zapFields, zap.String("use_time", computeUseTime(ctx)))
+	// 请求耗时
+	useTime := ginutil.GetUseTime(ctx)
+	if useTime != "" {
+		zapFields = append(zapFields, zap.String("use_time", useTime))
 	}
-	if ginutil.GetClientIp(ctx) != "" {
-		zapFields = append(zapFields, zap.String("client_ip", ginutil.GetClientIp(ctx)))
+	// 客户端IP
+	clientIp := ginutil.GetClientIp(ctx)
+	if clientIp != "" {
+		zapFields = append(zapFields, zap.String("client_ip", clientIp))
 	}
-	if ginutil.GetClientUserAgent(ctx) != "" {
-		zapFields = append(zapFields, zap.String("user_agent", ginutil.GetClientUserAgent(ctx)))
+	// 客户端信息
+	userAgent := ginutil.GetClientUserAgent(ctx)
+	if userAgent != "" {
+		zapFields = append(zapFields, zap.String("user_agent", userAgent))
 	}
-	if ginutil.GetRequestUrl(ctx) != "" {
-		zapFields = append(zapFields, zap.String("request_url", ginutil.GetRequestUrl(ctx)))
+	// 请求地址
+	requestUrl := ginutil.GetRequestUrl(ctx)
+	if requestUrl != "" {
+		zapFields = append(zapFields, zap.String("request_url", requestUrl))
 	}
 	if len(zapFields) > 0 {
 		zapLogger = zapLogger.With(zapFields...)
@@ -68,24 +76,24 @@ func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClien
 	return zapClient
 }
 
-/*
-* @Description: 计算耗时
-* @Author: LiuQHui
-* @Param ctx
-* @Return string
-* @Date 2024-06-12 17:44:25
- */
-func computeUseTime(ctx context.Context) string {
-	// 计算耗时
-	beginTime := ginutil.GetBeginTimeMilli(ctx)
-	if beginTime == 0 {
-		return ""
-	}
-	useTimeInt64 := time.Now().UnixMilli() - beginTime
-	useTime := time.Duration(useTimeInt64) * time.Millisecond
-
-	return fmt.Sprintf(" %.3f", useTime.Seconds())
-}
+///*
+//* @Description: 计算耗时
+//* @Author: LiuQHui
+//* @Param ctx
+//* @Return string
+//* @Date 2024-06-12 17:44:25
+// */
+//func computeUseTime(ctx context.Context) string {
+//	// 计算耗时
+//	beginTime := ginutil.GetBeginTimeMilli(ctx)
+//	if beginTime == 0 {
+//		return ""
+//	}
+//	useTimeInt64 := time.Now().UnixMilli() - beginTime
+//	useTime := time.Duration(useTimeInt64) * time.Millisecond
+//
+//	return fmt.Sprintf(" %.3f", useTime.Seconds())
+//}
 
 /*
 * @Description: Debug

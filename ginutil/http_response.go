@@ -18,6 +18,7 @@ type Response struct {
 type Additional struct {
 	Time    string `json:"time"`
 	TraceId string `json:"trace_id"`
+	UseTime string `json:"use_time"`
 }
 
 var (
@@ -27,8 +28,9 @@ var (
 
 func setAdditional(ctx context.Context, res *Response) {
 	res.Additional = Additional{
-		Time: time.Now().Format(time.DateTime),
-		//TraceId: utils.GetTraceId(ctx),
+		Time:    time.Now().Format(time.DateTime),
+		TraceId: GetTractId(ctx),
+		UseTime: GetUseTime(ctx),
 	}
 }
 

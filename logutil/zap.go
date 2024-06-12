@@ -1,12 +1,11 @@
 package logutil
 
 import (
+	"fmt"
 	"github.com/52lu/go-helpers/pathutil"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"path"
-	"strings"
 	"time"
 )
 
@@ -133,28 +132,28 @@ func (z *zapLogClient) getEncodeTime(t time.Time, enc zapcore.PrimitiveArrayEnco
 func (z *zapLogClient) getLumberjackWriteSyncer() zapcore.WriteSyncer {
 	lumberjackConfig := z.conf.LumberJackConf
 	lumberjackLogger := &lumberjack.Logger{
-		Filename:   z.getLogFile(),              //日志文件
-		MaxSize:    lumberjackConfig.MaxSize,    //单文件最大容量(单位MB)
-		MaxBackups: lumberjackConfig.MaxBackups, //保留旧文件的最大数量
-		MaxAge:     lumberjackConfig.MaxAge,     // 旧文件最多保存几天
-		Compress:   lumberjackConfig.Compress,   // 是否压缩/归档旧文件
+		Filename:   fmt.Sprintf("%s/%s.log", z.conf.Path, z.conf.FileName), //日志文件名
+		MaxSize:    lumberjackConfig.MaxSize,                               //单文件最大容量(单位MB)
+		MaxBackups: lumberjackConfig.MaxBackups,                            //保留旧文件的最大数量
+		MaxAge:     lumberjackConfig.MaxAge,                                // 旧文件最多保存几天
+		Compress:   lumberjackConfig.Compress,                              // 是否压缩/归档旧文件
 	}
 	// 设置日志文件切割
 	return zapcore.AddSync(lumberjackLogger)
 }
 
-/*
-* @Description: 获取日志文件名
-* @Author: LiuQHui
-* @Param cf
-* @Return string
-* @Date 2024-06-12 14:19:45
- */
-func (z *zapLogClient) getLogFile() string {
-	fileFormat := time.Now().Format(z.conf.FileTimeFormat)
-	fileName := strings.Join([]string{
-		z.conf.FilePrefix,
-		fileFormat,
-		"log"}, ".")
-	return path.Join(z.conf.Path, fileName)
-}
+///*
+//* @Description: 获取日志文件名
+//* @Author: LiuQHui
+//* @Param cf
+//* @Return string
+//* @Date 2024-06-12 14:19:45
+// */
+//func (z *zapLogClient) getLogFile() string {
+//	//fileFormat := time.Now().Format(z.conf.FileTimeFormat)
+//	fileName := strings.Join([]string{
+//		z.conf.FileName,
+//		//fileFormat,
+//		"log"}, ".")
+//	return path.Join(z.conf.Path, fileName)
+//}
