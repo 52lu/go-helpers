@@ -17,10 +17,15 @@ type httpServer struct {
 }
 
 type HttpServerConfig struct {
-	Port             int                  // 端口
-	DelayExistSecond int                  // 延迟多久退出，用于平滑重启
-	MiddlewareList   []gin.HandlerFunc    // 中间件
-	RouterFunc       []RouterRegisterFunc // 路由函数
+	Port              int                      // 端口
+	RunMode           string                   // 运行默认;Debug 模式 (gin.DebugMode);
+	DelayExistSecond  int                      // 延迟多久退出，用于平滑重启
+	MiddlewareList    []gin.HandlerFunc        // 中间件
+	RouterFunc        []RouterRegisterFunc     // 路由函数
+	DefaultMiddleware *DefaultMiddlewareSwitch // 是否开启默认中间件
+}
+type DefaultMiddlewareSwitch struct {
+	EnableRecoveryMiddleware bool // 捕获panic
 }
 
 type RouterRegisterFunc func(*gin.Engine)
@@ -38,10 +43,6 @@ func NewHttpServer(conf HttpServerConfig) *httpServer {
 	}
 }
 
-func (h *httpServer) AddRouter() {
-
-}
-
 /*
 * @Description: 启动服务
 * @Author: LiuQHui
@@ -49,25 +50,32 @@ func (h *httpServer) AddRouter() {
 * @Date 2024-06-11 15:44:43
  */
 func (h *httpServer) Start() {
+	// 设置运行模式
+	gin.SetMode(gin.DebugMode)
+	if h.config.RunMode != "" {
+		gin.SetMode(h.config.RunMode)
+	}
 	// 创建从操作系统中断信号的上下文
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 	// 创建gin服务实例
-	router := gin.Default()
-
+	engine := gin.Default()
+	// 追加信息到上下文中间件
+	engine.Use(AdditionalMiddleware)
+	// 判断是否开启默认中间件
+	h.enableDefaultMiddle(engine)
 	// 注册路由
 	for _, registerFunc := range h.config.RouterFunc {
-		registerFunc(router)
+		registerFunc(engine)
 	}
-
 	// 注册中间件
 	if len(h.config.MiddlewareList) > 0 {
-		router.Use(h.config.MiddlewareList...)
+		engine.Use(h.config.MiddlewareList...)
 	}
-
+	// 创建服务
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Port),
-		Handler: router,
+		Handler: engine,
 	}
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below
@@ -96,4 +104,22 @@ func (h *httpServer) Start() {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 	log.Println("Server exiting")
+}
+
+/*
+* @Description: 判断是否开启默认中间件
+* @Author: LiuQHui
+* @Receiver h
+* @Param engine
+* @Date 2024-06-12 12:29:15
+ */
+func (h *httpServer) enableDefaultMiddle(engine *gin.Engine) {
+	// 是否添加默认中间件
+	if h.config.DefaultMiddleware != nil {
+		defaultMiddlewareSwitch := h.config.DefaultMiddleware
+		// 捕获异常中间件
+		if defaultMiddlewareSwitch.EnableRecoveryMiddleware {
+			engine.Use(RecoveryMiddleware)
+		}
+	}
 }
