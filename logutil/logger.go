@@ -44,13 +44,26 @@ func getLogger(ctx context.Context) *loggerClient {
  */
 func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClient {
 	zapLogger := zapClient.zapLogger
-	zapLogger = zapLogger.With(
-		zap.String("trace_id", ginutil.GetTractId(ctx)),
-		zap.String("use_time", computeUseTime(ctx)),
-		zap.String("client_ip", ginutil.GetClientIp(ctx)),
-		zap.String("user_agent", ginutil.GetClientUserAgent(ctx)),
-		zap.String("request_url", ginutil.GetRequestUrl(ctx)),
-	)
+	var zapFields []zap.Field
+
+	if ginutil.GetTractId(ctx) != "" {
+		zapFields = append(zapFields, zap.String("trace_id", ginutil.GetTractId(ctx)))
+	}
+	if computeUseTime(ctx) != "" {
+		zapFields = append(zapFields, zap.String("use_time", computeUseTime(ctx)))
+	}
+	if ginutil.GetClientIp(ctx) != "" {
+		zapFields = append(zapFields, zap.String("client_ip", ginutil.GetClientIp(ctx)))
+	}
+	if ginutil.GetClientUserAgent(ctx) != "" {
+		zapFields = append(zapFields, zap.String("user_agent", ginutil.GetClientUserAgent(ctx)))
+	}
+	if ginutil.GetRequestUrl(ctx) != "" {
+		zapFields = append(zapFields, zap.String("request_url", ginutil.GetRequestUrl(ctx)))
+	}
+	if len(zapFields) > 0 {
+		zapLogger = zapLogger.With(zapFields...)
+	}
 	zapClient.zapLogger = zapLogger
 	return zapClient
 }
@@ -66,7 +79,7 @@ func computeUseTime(ctx context.Context) string {
 	// 计算耗时
 	beginTime := ginutil.GetBeginTimeMilli(ctx)
 	if beginTime == 0 {
-		return "0"
+		return ""
 	}
 	useTimeInt64 := time.Now().UnixMilli() - beginTime
 	useTime := time.Duration(useTimeInt64) * time.Millisecond

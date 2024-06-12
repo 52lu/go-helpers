@@ -120,7 +120,7 @@ func (z *zapLogClient) getEncoderConfig() zapcore.EncoderConfig {
 * @Date 2024-06-12 14:19:27
  */
 func (z *zapLogClient) getEncodeTime(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(t.Format("2006/01/02 - 15:04:05.000"))
+	enc.AppendString(t.Format("2006-01-02 15:04:05.000"))
 }
 
 /*
@@ -151,7 +151,7 @@ func (z *zapLogClient) getLumberjackWriteSyncer() zapcore.WriteSyncer {
 * @Date 2024-06-12 14:19:45
  */
 func (z *zapLogClient) getLogFile() string {
-	fileFormat := time.Now().Format(z.conf.FileFormat)
+	fileFormat := time.Now().Format(z.conf.FileTimeFormat)
 	fileName := strings.Join([]string{
 		z.conf.FilePrefix,
 		fileFormat,
