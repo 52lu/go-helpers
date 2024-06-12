@@ -1,6 +1,7 @@
 package verifyutil
 
 import (
+	"errors"
 	"fmt"
 	cockroachdbError "github.com/cockroachdb/errors"
 	"github.com/go-playground/locales/zh"
@@ -45,14 +46,15 @@ func init() {
 func ValidateStruct(s interface{}) error {
 	err := validate.Struct(s)
 	if err != nil {
-		if errors, ok := err.(validator.ValidationErrors); ok {
-			var fieldMap = make(map[string]string, len(errors))
-			for _, fieldError := range errors {
+		var validationErrors validator.ValidationErrors
+		if errors.As(err, &validationErrors) {
+			var fieldMap = make(map[string]string, len(validationErrors))
+			for _, fieldError := range validationErrors {
 				field := fieldError.StructField()
 				namespace := fieldError.Namespace()
 				fieldMap[namespace] = field
 			}
-			translate := errors.Translate(trans)
+			translate := validationErrors.Translate(trans)
 			var errMsg string
 			typeOf := reflect.TypeOf(s)
 			for key, val := range translate {
