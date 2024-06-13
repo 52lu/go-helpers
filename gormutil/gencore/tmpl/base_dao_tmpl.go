@@ -6,8 +6,8 @@ const DefaultBaseDaoTemplate = `//tip:生成之后，后面再次运行不会再
 package {{.PackageName}}
 
 import (
-	"github.com/52lu/go-helpers/gormutil/gormhook"
 	"context"
+	"github.com/52lu/go-helpers/gormutil/gormhook"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"sync"
