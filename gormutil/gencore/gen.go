@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/52lu/go-helpers/gormutil/gormhook/hooktype"
+	"github.com/thoas/go-funk"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 	"gorm.io/driver/mysql"
@@ -20,9 +21,10 @@ type genUtilClient struct {
 type GenConfig struct {
 	// 数据库连接-> 用户:密码@tcp(ip:port)/db?charset=utf8mb4&parseTime=true&loc=Local
 	MysqlDsn           string
-	OutPath            string // 输出目录
-	TablePre           string // 表前缀
-	ModelSuffix        string // 生成的mode后缀名
+	OutPath            string   // 输出目录
+	TablePre           string   // 表前缀
+	IgnoreTables       []string // 忽略表
+	ModelSuffix        string   // 生成的mode后缀名
 	GenConf            *gen.Config
 	OverDaoFile        bool // 覆盖dao文件
 	UseGormHookDataLog bool // 是否开启表修改日志(更新表的记录)都会被记录
@@ -164,10 +166,10 @@ func (g genUtilClient) Run() error {
 * @Date 2024-05-27 19:28:37
  */
 func (g genUtilClient) _runGormGen() ([]interface{}, error) {
-	var modelList []interface{}
+	var allModelList []interface{}
 	// 配置检查
 	if err := g.checkConf(); err != nil {
-		return modelList, err
+		return allModelList, err
 	}
 	// 获取gen实例
 	genInstance := g.getGeneratorInstance()
@@ -212,8 +214,22 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
 	}
 	genInstance.WithDataTypeMap(dataTypeCustomMap)
 	// 创建全部模型文件, 并覆盖前面创建的同名模型
-	modelList = genInstance.GenerateAllTable()
-	//return modelList, nil
+	allTableList, err := db.Migrator().GetTables()
+	if err != nil {
+		return nil, err
+	}
+	var tableList []string
+	for _, tableName := range allTableList {
+		if funk.ContainsString(g.conf.IgnoreTables, tableName) {
+			continue
+		}
+		tableList = append(tableList, tableName)
+	}
+	// 生成model
+	var modelList = make([]interface{}, len(tableList))
+	for i, tableName := range tableList {
+		modelList[i] = genInstance.GenerateModel(tableName)
+	}
 	// 生成基础函数
 	genInstance.ApplyBasic(modelList...)
 	// 填充常用SQL
