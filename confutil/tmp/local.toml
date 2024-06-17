@@ -4,11 +4,16 @@ app_addr = "127.0.0.1:8100"
 
 
 [apollo]
-server = "http://127.0.0.1:8100/apollo"
-cluster = "default"
-appid = "appid-demo"
-namespace = "100.go-service,app.json,application"
-log = "./logs/apollo.log"
+enable = true #是否启用Apollo配置
+server = "http://test-apollo.weimiaocaishang.com"
+cluster = "default" # 集群
+appId = "cq-partner-api" #appId
+namespaces = "100.go-service app.json application" # 命名空间
+secret = "" # 安全模式下客户端需要的访问密钥
+isBackupConfig = true # 是否从备份区获取配置。默认为false
+backupConfigPath = "./tmp" # 备份配置文件路径
+syncServerTimeout=10 # 同步配置服务的超时时间,默认为10秒
+
 
 [database.default]
 driver = "mysql"

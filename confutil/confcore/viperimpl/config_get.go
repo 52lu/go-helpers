@@ -18,6 +18,10 @@ func (v *viperParseInstance) GetInt64(key string) int64 {
 	return v.viper.GetInt64(key)
 }
 
+func (v *viperParseInstance) GetInt(key string) int {
+	return v.viper.GetInt(key)
+}
+
 func (v *viperParseInstance) GetFloat64(key string) float64 {
 	return v.viper.GetFloat64(key)
 }

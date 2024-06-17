@@ -76,25 +76,6 @@ func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClien
 	return zapClient
 }
 
-///*
-//* @Description: 计算耗时
-//* @Author: LiuQHui
-//* @Param ctx
-//* @Return string
-//* @Date 2024-06-12 17:44:25
-// */
-//func computeUseTime(ctx context.Context) string {
-//	// 计算耗时
-//	beginTime := ginutil.GetBeginTimeMilli(ctx)
-//	if beginTime == 0 {
-//		return ""
-//	}
-//	useTimeInt64 := time.Now().UnixMilli() - beginTime
-//	useTime := time.Duration(useTimeInt64) * time.Millisecond
-//
-//	return fmt.Sprintf(" %.3f", useTime.Seconds())
-//}
-
 /*
 * @Description: Debug
 * @Author: LiuQHui

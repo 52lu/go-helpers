@@ -13,15 +13,15 @@ func initConfig() error {
 		ConfigPaths: []string{"./tmp"},
 		ConfigFile:  "local.toml",
 		ParseMethod: conftype.ParseMethodTypeViper,
-		ApolloConf: &conftype.ApolloConfig{
-			Enable:           true,
-			ServiceUrl:       "http://xxxx",
-			Cluster:          "default",
-			AppId:            "appid",
-			Namespaces:       []string{"application", "app.json"},
-			IsBackupConfig:   true,
-			BackupConfigPath: "./tmp",
-		},
+		//apolloConf: &conftype.apolloConfig{
+		//	Enable:           true,
+		//	ServiceUrl:       "http://xxxx",
+		//	Cluster:          "default",
+		//	AppId:            "appid",
+		//	Namespaces:       []string{"application", "app.json"},
+		//	IsBackupConfig:   true,
+		//	BackupConfigPath: "./tmp",
+		//},
 	})
 	if err != nil {
 		return err
@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 	fmt.Println(s)
 	fmt.Println("获取key ENABLE_SWITH_TYPE:", GetInt64("ENABLE_SWITH_TYPE"))
 	for true {
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 3)
 		fmt.Println("获取key ENABLE_SWITH_TYPE:", GetInt64("ENABLE_SWITH_TYPE"))
 
 		fmt.Println("获取---test_env:", GetStringSlice("test_env"))

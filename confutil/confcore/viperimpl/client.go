@@ -1,6 +1,7 @@
 package viperimpl
 
 import (
+	"fmt"
 	"github.com/52lu/go-helpers/confutil/confcore/apolloconf"
 	"github.com/52lu/go-helpers/confutil/conftype"
 	"github.com/spf13/viper"
@@ -62,8 +63,11 @@ func (v *viperParseInstance) Parse() error {
 	if err != nil {
 		return err
 	}
+	// 读取apollo配置
+	enableApolloConf := v.GetBool("apollo.enable")
+	fmt.Println(enableApolloConf)
 	// 是否开启apollo
-	if v.conf.ApolloConf != nil && v.conf.ApolloConf.Enable {
+	if enableApolloConf {
 		// 合并apollo配置
 		err = v.mergeApollo()
 	}
@@ -91,13 +95,24 @@ func (v *viperParseInstance) UpdateConf(confMap map[string]interface{}) error {
 * @Date 2024-06-05 14:28:13
  */
 func (v *viperParseInstance) mergeApollo() error {
-	client := apolloconf.NewApolloConfClient(v.conf.ApolloConf)
+	apolloConf := &conftype.ApolloConfig{
+		Enable:            v.GetBool("apollo.enable"),
+		ServiceUrl:        v.GetString("apollo.server"),
+		Cluster:           v.GetString("apollo.cluster"),
+		AppId:             v.GetString("apollo.appId"),
+		Secret:            v.GetString("apollo.secret"),
+		SyncServerTimeout: v.GetInt("apollo.syncServerTimeout"),
+		Namespaces:        v.GetStringSlice("apollo.namespaces"),
+		IsBackupConfig:    v.GetBool("apollo.isBackupConfig"),
+		BackupConfigPath:  v.GetString("apollo.backupConfigPath"),
+	}
+	client := apolloconf.NewApolloConfClient(apolloConf)
 	client.SetConfigChangeNotifyImpl(v)
 	err := client.Start()
 	if err != nil {
 		return err
 	}
-	for _, namespace := range v.conf.ApolloConf.Namespaces {
+	for _, namespace := range apolloConf.Namespaces {
 		confMap, _ := client.GetConfMapByNamespace(namespace)
 		if len(confMap) == 0 {
 			continue
