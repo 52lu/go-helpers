@@ -28,7 +28,6 @@ type ConfigParseConf struct {
 	ConfigPaths []string        // 配置目录，优先级根据顺序来
 	ConfigFile  string          // 配置文件
 	ParseMethod ParseMethodType // 解析方式类型类型
-	//ApolloConf  *ApolloConfig   // apollo配置
 }
 
 // Apollo配置

@@ -32,6 +32,15 @@ func GetString(key string) string { return _client.impl.GetString(key) }
 func GetBool(key string) bool { return _client.impl.GetBool(key) }
 
 /*
+* @Description: 根据key获取配置值(int类型)
+* @Author: LiuQHui
+* @Param key
+* @Return interface{}
+* @Date 2024-06-04 14:18:30
+ */
+func GetInt(key string) int { return _client.impl.GetInt(key) }
+
+/*
 * @Description: 根据key获取配置值(int64类型)
 * @Author: LiuQHui
 * @Param key

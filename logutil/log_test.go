@@ -3,17 +3,15 @@ package logutil
 import (
 	"context"
 	"testing"
-	"time"
 )
 
 func TestDemo(t *testing.T) {
 	// 设置日志器
 	SetLogger(LogConfig{
-		Path:           "./logs",
-		Level:          LogLevelDebug,
-		FileName:       "app",
-		FileTimeFormat: time.DateOnly,
-		OutFormat:      OutFormatJson,
+		Path:      "./logs",
+		Level:     LogLevelDebug,
+		FileName:  "app",
+		OutFormat: OutFormatJson,
 		LumberJackConf: LumberJackConfig{
 			MaxSize:    1,
 			MaxBackups: 30,

@@ -2,10 +2,9 @@ package logutil
 
 // 日志配置
 type LogConfig struct {
-	Path           string           `yaml:"path"`           // 日志文件目录
 	Level          string           `yaml:"level"`          // 最低记录级别
+	Path           string           `yaml:"path"`           // 日志文件目录
 	FileName       string           `yaml:"fileName"`       // 日志文件名
-	FileTimeFormat string           `yaml:"fileTimeFormat"` // 日志文件名中的日期格式；20060102
 	OutFormat      string           `yaml:"outFormat"`      // 日志输出格式: json/console
 	LumberJackConf LumberJackConfig `yaml:"lumberJackConf"` // 日志文件切割和压缩
 }
