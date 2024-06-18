@@ -1,7 +1,6 @@
 package viperimpl
 
 import (
-	"fmt"
 	"github.com/52lu/go-helpers/confutil/confcore/apolloconf"
 	"github.com/52lu/go-helpers/confutil/conftype"
 	"github.com/spf13/viper"
@@ -38,6 +37,12 @@ func NewViperConfInstance(cf conftype.ConfigParseConf) *viperParseInstance {
 		viperInstance.SetConfigName(filename[:len(filename)-len(extension)])
 		// 设置读取文件格式
 		viperInstance.SetConfigType(strings.ReplaceAll(extension, ".", ""))
+
+		// 解析配置目录,需要判断是否是路径
+		if len(cf.ConfigPaths) == 0 && strings.Contains(cf.ConfigFile, "/") {
+			cf.ConfigPaths = []string{filepath.Dir(cf.ConfigFile)}
+		}
+
 		// 设置配置文件目录(可以设置多个,优先级根据添加顺序来)
 		if len(cf.ConfigPaths) > 0 {
 			for _, path := range cf.ConfigPaths {
@@ -63,11 +68,8 @@ func (v *viperParseInstance) Parse() error {
 	if err != nil {
 		return err
 	}
-	// 读取apollo配置
-	enableApolloConf := v.GetBool("apollo.enable")
-	fmt.Println(enableApolloConf)
 	// 是否开启apollo
-	if enableApolloConf {
+	if v.GetBool("apollo.enable") {
 		// 合并apollo配置
 		err = v.mergeApollo()
 	}

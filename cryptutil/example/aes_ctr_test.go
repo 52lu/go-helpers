@@ -7,7 +7,7 @@ package example
 
 import (
 	"fmt"
-	"gitlab.dev.olanyun.com/olanyun/saas-utils/cryptoutil"
+	"github.com/52lu/go-helpers/cryptutil"
 	"strings"
 	"testing"
 )
@@ -16,7 +16,7 @@ import (
 func TestAesEncryptByCTR(t *testing.T) {
 	key := strings.Repeat("a", 16)
 	data := "hello word"
-	hex, base64 := cryptoutil.AesEncryptByCTR(data, key)
+	hex, base64 := cryptutil.AesEncryptByCTR(data, key)
 	fmt.Printf("加密key: %v \n", key)
 	fmt.Printf("加密key长度: %v \n", len(key))
 	fmt.Printf("加密数据: %v \n", data)
@@ -28,7 +28,7 @@ func TestAesEncryptByCTR(t *testing.T) {
 func TestAesDecryptByCTR(t *testing.T) {
 	key := strings.Repeat("a", 16)
 	data := "Oe2qKyQC+9KgJu8UWLgbVQ=="
-	res := cryptoutil.AesDecryptByCTR(data, key)
+	res := cryptutil.AesDecryptByCTR(data, key)
 	fmt.Printf("解密key: %v \n", key)
 	fmt.Printf("解密数据: %v \n", data)
 	fmt.Printf("解密结果: %v \n", res)

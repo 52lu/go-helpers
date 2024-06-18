@@ -7,7 +7,7 @@ package example
 
 import (
 	"fmt"
-	"gitlab.dev.olanyun.com/olanyun/saas-utils/cryptoutil"
+	"github.com/52lu/go-helpers/cryptutil"
 	"strings"
 	"testing"
 )
@@ -16,9 +16,9 @@ import (
 func TestAesEncryptByOFB(t *testing.T) {
 	key := strings.Repeat("a", 16)
 	data := "123"
-	_, base64 := cryptoutil.AesEncryptByOFB(data, key)
-	_, base642 := cryptoutil.AesEncryptByCTR(data, key)
-	_, base643 := cryptoutil.AesEncryptByCFB(data, key)
+	_, base64 := cryptutil.AesEncryptByOFB(data, key)
+	_, base642 := cryptutil.AesEncryptByCTR(data, key)
+	_, base643 := cryptutil.AesEncryptByCFB(data, key)
 	fmt.Printf("加密key: %v \n", key)
 	fmt.Printf("加密key长度: %v \n", len(key))
 	fmt.Printf("加密数据: %v \n", data)
@@ -31,8 +31,8 @@ func TestAesEncryptByOFB(t *testing.T) {
 func TestAesDecryptByOFB(t *testing.T) {
 	key := strings.Repeat("a", 16)
 	data := "Oe2qKyQC69LyY+8UWLgbVQ=="
-	res := cryptoutil.AesDecryptByOFB(data, key)
-	res1 := cryptoutil.AesDecryptByCFB(data, key)
+	res := cryptutil.AesDecryptByOFB(data, key)
+	res1 := cryptutil.AesDecryptByCFB(data, key)
 	fmt.Printf("解密key: %v \n", key)
 	fmt.Printf("解密数据: %v \n", data)
 	fmt.Printf("解密结果(OFB): %v \n", res)

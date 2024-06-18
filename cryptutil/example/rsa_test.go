@@ -7,7 +7,7 @@ package example
 
 import (
 	"fmt"
-	"gitlab.dev.olanyun.com/olanyun/saas-utils/cryptoutil"
+	"github.com/52lu/go-helpers/cryptutil"
 	"testing"
 )
 
@@ -41,7 +41,7 @@ BQrvG4ZRH5rCnPXMa8FksFelAit5UlAX7uybirbkAvV5
 
 // 测试生成密钥对
 func TestGenerateKey(t *testing.T) {
-	key, err := cryptoutil.GenerateRSAPKCS1Key(1024, keyPath)
+	key, err := cryptutil.GenerateRSAPKCS1Key(1024, keyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -52,7 +52,7 @@ func TestGenerateKey(t *testing.T) {
 func TestReadKey(t *testing.T) {
 	// pkcs1格式-私钥
 	privatePKCS1KeyPath := keyPath + "/private.pem"
-	privatePKCS1Key, err := cryptoutil.ReadRSAPKCS1PrivateKey(privatePKCS1KeyPath)
+	privatePKCS1Key, err := cryptutil.ReadRSAPKCS1PrivateKey(privatePKCS1KeyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -60,7 +60,7 @@ func TestReadKey(t *testing.T) {
 
 	// pkcs8格式-公钥
 	publicPKCS8KeyPath := keyPath + "/public.pem"
-	publicPKCS8Key, err := cryptoutil.ReadRSAPublicKey(publicPKCS8KeyPath)
+	publicPKCS8Key, err := cryptutil.ReadRSAPublicKey(publicPKCS8KeyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -70,14 +70,14 @@ func TestReadKey(t *testing.T) {
 func TestReadKeyByStr(t *testing.T) {
 	// 私钥
 	// pkcs1格式-私钥
-	privatePKCS1Key, err := cryptoutil.ReadRSAPKCS1PrivateKeyByStr(privatePKCS1KeyStr)
+	privatePKCS1Key, err := cryptutil.ReadRSAPKCS1PrivateKeyByStr(privatePKCS1KeyStr)
 	if err != nil {
 		t.Error(err)
 	}
 	fmt.Printf("PKCS1私钥: %#v\n", privatePKCS1Key)
 
 	// pkcs8格式-公钥
-	publicPKCS8Key, err := cryptoutil.ReadRSAPublicKey(publicPKCS8KeyStr)
+	publicPKCS8Key, err := cryptutil.ReadRSAPublicKey(publicPKCS8KeyStr)
 	if err != nil {
 		t.Error(err)
 	}
@@ -88,7 +88,7 @@ func TestReadKeyByStr(t *testing.T) {
 func TestRsaEncrypt(t *testing.T) {
 	publicKeyPath := keyPath + "/tmp/public_ssl.pem"
 	data := "123456"
-	encrypt, err := cryptoutil.RSAEncrypt(data, publicKeyPath)
+	encrypt, err := cryptutil.RSAEncrypt(data, publicKeyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -99,7 +99,7 @@ func TestRsaEncrypt(t *testing.T) {
 func TestRsaDecrypt(t *testing.T) {
 	privateKeyPath := keyPath + "/tmp/private_ssl.pem"
 	data := "pUYa4set6XkBshfio5g2hzPx1tA67sxEvJBpJiuK3McJ9cPJAXzuRkWIy4s6cDQOhrPUaNXhr3M3WLHH19/eaqcNZz1yOFZwgGKmkWtdmygtLB/wrDant9uRfXrvzlV9iMq+cUlqsrwuCa0wcGEBNHRhIJOQSTs+SxaRTeoRCbU="
-	encrypt, err := cryptoutil.RSADecrypt(data, privateKeyPath)
+	encrypt, err := cryptutil.RSADecrypt(data, privateKeyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -109,7 +109,7 @@ func TestRsaDecrypt(t *testing.T) {
 // 加密测试
 func TestRsaEncryptByStrKey(t *testing.T) {
 	data := "123456"
-	encrypt, err := cryptoutil.RSAEncryptByStrKey(data, publicPKCS8KeyStr)
+	encrypt, err := cryptutil.RSAEncryptByStrKey(data, publicPKCS8KeyStr)
 	if err != nil {
 		t.Error(err)
 	}
@@ -119,7 +119,7 @@ func TestRsaEncryptByStrKey(t *testing.T) {
 // 解密测试
 func TestRsaDecryptByStrKey(t *testing.T) {
 	data := "ffJ5/1dCFHvSTkE66MWKfia+FNSZQhriJ/N+LwgcSJYXHKRvotSm2Fgf3YTXNaBpaKQgqOue837wAvLTOjwbSqGAP3CQAIiky4J4Sgny2xa1AJ0iGQ0o7Rj1j2/qzN4ywUlSDVphY5u3/bP8wc6Xoc+JiGXPEOZEvPx9VjS88OQ="
-	encrypt, err := cryptoutil.RSADecryptByStrKey(data, privatePKCS1KeyStr)
+	encrypt, err := cryptutil.RSADecryptByStrKey(data, privatePKCS1KeyStr)
 	if err != nil {
 		t.Error(err)
 	}
@@ -130,7 +130,7 @@ func TestRsaDecryptByStrKey(t *testing.T) {
 func TestAddSign(t *testing.T) {
 	privateKeyPath := keyPath + "/tmp/private_ssl.pem"
 	data := "123456"
-	sign, err := cryptoutil.GetRSASign(data, privateKeyPath)
+	sign, err := cryptutil.GetRSASign(data, privateKeyPath)
 	if err != nil {
 		t.Error(err)
 	}
@@ -142,7 +142,7 @@ func TestVaSign(t *testing.T) {
 	publicKeyPath := keyPath + "/tmp/public_ssl.pem"
 	data := "123456"
 	sign := "QnGqGbIqoHjJG1l+JiaOKWBdX+h00lnKCoO2rTYKIro9hoaDj7nqmu+Mxsuo+2jumicvCNBZNOpMzYryjZf0x7Q4ycLBtqtCWuFRasiInUO7Avy19LRTjdMf2xw9968vilB/xEAQ53JXIDUVvCsMxTfpHI9oRiWEGXWNkhfkjkQ="
-	verifyRsaSign, err := cryptoutil.VerifyRsaSign(data, publicKeyPath, sign)
+	verifyRsaSign, err := cryptutil.VerifyRsaSign(data, publicKeyPath, sign)
 	if err != nil {
 		fmt.Printf("验签失败: %v \n", err)
 	}

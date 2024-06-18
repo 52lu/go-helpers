@@ -7,7 +7,7 @@ package example
 
 import (
 	"fmt"
-	"gitlab.dev.olanyun.com/olanyun/saas-utils/cryptoutil"
+	"github.com/52lu/go-helpers/cryptutil"
 	"strings"
 	"testing"
 )
@@ -16,11 +16,11 @@ func TestAesGCM(t *testing.T) {
 	key := strings.Repeat("a", 16)
 	data := "hello word!"
 	// 加密
-	gcm := cryptoutil.AesEncryptByGCM(data, key)
+	gcm := cryptutil.AesEncryptByGCM(data, key)
 	fmt.Printf("密钥key: %s \n", key)
 	fmt.Printf("加密数据: %s \n", data)
 	fmt.Printf("加密结果: %s \n", gcm)
 	// 解密
-	byGCM := cryptoutil.AesDecryptByGCM(gcm, key)
+	byGCM := cryptutil.AesDecryptByGCM(gcm, key)
 	fmt.Printf("解密结果: %s \n", byGCM)
 }

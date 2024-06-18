@@ -4,10 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/52lu/go-helpers/middlewareutil"
 	"github.com/gin-gonic/gin"
+	"github.com/thoas/go-funk"
 	"log"
 	"net/http"
 	"os/signal"
+	"sort"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -23,9 +27,11 @@ type HttpServerConfig struct {
 	MiddlewareList    []gin.HandlerFunc        // 中间件
 	RouterFunc        []RouterRegisterFunc     // 路由函数
 	DefaultMiddleware *DefaultMiddlewareSwitch // 是否开启默认中间件
+	ExtendedMap       map[string]interface{}   // 扩展信息，用于启动时打印
 }
 type DefaultMiddlewareSwitch struct {
 	EnableRecoveryMiddleware bool // 捕获panic
+	EnableCorsMiddleware     bool // 跨域cors
 }
 
 type RouterRegisterFunc func(*gin.Engine)
@@ -60,8 +66,6 @@ func (h *httpServer) Start() {
 	defer stop()
 	// 创建gin服务实例
 	engine := gin.Default()
-	// 追加信息到上下文中间件
-	engine.Use(AdditionalMiddleware)
 	// 判断是否开启默认中间件
 	h.enableDefaultMiddle(engine)
 	// 注册路由
@@ -86,6 +90,9 @@ func (h *httpServer) Start() {
 		}
 	}()
 
+	// 打印启动信息
+	h.printRunInfo()
+
 	// Listen for the interrupt signal. 监听中断信号
 	<-ctx.Done()
 
@@ -97,13 +104,36 @@ func (h *httpServer) Start() {
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	// 上下文用于通知服务器有 5 秒的时间来完成当前正在处理的请求;平滑重启防止直接终端服务
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(h.config.DelayExistSecond)*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
 	}
 	log.Println("Server exiting")
+}
+
+/*
+* @Description: 打印启动信息
+* @Author: LiuQHui
+* @Receiver h
+* @Date 2024-06-18 10:35:06
+ */
+func (h *httpServer) printRunInfo() {
+	fmt.Println("========================================> 服务信息 <======================================== ")
+	fmt.Printf("运行模式: %v\n", h.config.RunMode)
+	fmt.Printf("平滑重启处理时间: %d秒 \n", h.config.DelayExistSecond)
+	fmt.Printf("服务访问地址: http://0.0.0.0:%v\n", h.config.Port)
+	if len(h.config.ExtendedMap) > 0 {
+		keys := funk.Keys(h.config.ExtendedMap).([]string)
+		// 对键进行排序
+		sort.Strings(keys)
+		// 根据排序后的键，遍历并输出 map 的内容
+		fmt.Println("扩展信息(ExtendedMap):")
+		for _, key := range keys {
+			fmt.Printf("  %s: %v \n", key, h.config.ExtendedMap[key])
+		}
+	}
+	fmt.Println("==========================================>  END <========================================== ")
 }
 
 /*
@@ -114,12 +144,27 @@ func (h *httpServer) Start() {
 * @Date 2024-06-12 12:29:15
  */
 func (h *httpServer) enableDefaultMiddle(engine *gin.Engine) {
+	// 追加信息到上下文中间件
+	engine.Use(AdditionalMiddleware)
+	if h.config.RunMode == gin.DebugMode {
+		fmt.Printf("[ginutil]   MiddlewareRegister %v --> ginutil.AdditionalMiddleware\n", strings.Repeat(" ", 13))
+	}
 	// 是否添加默认中间件
 	if h.config.DefaultMiddleware != nil {
 		defaultMiddlewareSwitch := h.config.DefaultMiddleware
 		// 捕获异常中间件
 		if defaultMiddlewareSwitch.EnableRecoveryMiddleware {
+			if h.config.RunMode == gin.DebugMode {
+				fmt.Printf("[ginutil]   MiddlewareRegister %v --> ginutil.RecoveryMiddleware\n", strings.Repeat(" ", 13))
+			}
 			engine.Use(RecoveryMiddleware)
+		}
+		// 跨域cors
+		if defaultMiddlewareSwitch.EnableCorsMiddleware {
+			if h.config.RunMode == gin.DebugMode {
+				fmt.Printf("[ginutil]   MiddlewareRegister %v --> middlewareutil.CORSMiddleware\n", strings.Repeat(" ", 13))
+			}
+			engine.Use(middlewareutil.CORSMiddleware())
 		}
 	}
 }
