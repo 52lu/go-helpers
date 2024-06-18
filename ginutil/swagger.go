@@ -25,5 +25,4 @@ func (h *httpServer) swaggerInit(engine *gin.Engine) {
 	swaggerInfo.BasePath = ""
 	// Serve Swagger UI
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 }

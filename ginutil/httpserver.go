@@ -22,21 +22,21 @@ type httpServer struct {
 }
 
 type HttpServerConfig struct {
-	Port                 int                      // 端口
-	RunMode              string                   // 运行默认;Debug 模式 (gin.DebugMode);
-	DelayExistSecond     int                      // 延迟多久退出，用于平滑重启
-	CommonMiddlewareList []gin.HandlerFunc        // 公共中间件
-	RouterFunc           []RouterRegisterFunc     // 路由函数
-	DefaultMiddleware    *DefaultMiddlewareSwitch // 是否开启默认中间件
-	ExtendedMap          map[string]interface{}   // 扩展信息，用于启动时打印
+	Port                 int                     // 端口
+	RunMode              string                  // 运行默认;Debug 模式 (gin.DebugMode);
+	DelayExistSecond     int                     // 延迟多久退出，用于平滑重启
+	CommonMiddlewareList []gin.HandlerFunc       // 公共中间件
+	RouterFunc           []RouterRegisterFunc    // 路由函数
+	DefaultMiddleware    DefaultMiddlewareSwitch // 是否开启默认中间件
+	ExtendedMap          map[string]interface{}  // 扩展信息，用于启动时打印
 	SwaggerSpec          *swag.Spec
 }
 type DefaultMiddlewareSwitch struct {
-	EnableRecoveryMiddleware bool // 捕获panic
-	EnableCorsMiddleware     bool // 跨域cors
+	DisableRecoveryMiddleware bool // 禁用panic中间件,默认false
+	DisableCorsMiddleware     bool // 禁用跨域cors，默认false
 }
 
-type RouterRegisterFunc func(*gin.Engine)
+type RouterRegisterFunc func(group *gin.Engine)
 
 /*
 * @Description: 实例化服务
@@ -74,7 +74,6 @@ func (h *httpServer) Start() {
 	if len(h.config.CommonMiddlewareList) > 0 {
 		engine.Use(h.config.CommonMiddlewareList...)
 	}
-
 	// 注册路由
 	for _, registerFunc := range h.config.RouterFunc {
 		registerFunc(engine)
@@ -112,7 +111,11 @@ func (h *httpServer) Start() {
 	// The context is used to inform the server it has 5 seconds to finish
 	// the request it is currently handling
 	// 上下文用于通知服务器有 5 秒的时间来完成当前正在处理的请求;平滑重启防止直接终端服务
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(h.config.DelayExistSecond)*time.Second)
+	delayExistSecond := 10
+	if h.config.DelayExistSecond > 0 {
+		delayExistSecond = h.config.DelayExistSecond
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(delayExistSecond)*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server forced to shutdown: ", err)
@@ -158,24 +161,22 @@ func (h *httpServer) enableDefaultMiddle(engine *gin.Engine) {
 	// 追加信息到上下文中间件
 	engine.Use(AdditionalMiddleware)
 	if h.config.RunMode == gin.DebugMode {
-		fmt.Printf("[ginutil]   MiddlewareRegister %v --> ginutil.AdditionalMiddleware\n", strings.Repeat(" ", 13))
+		fmt.Printf("[ginutil]   MiddlewareRegister %v --> github.com/52lu/go-helpers/ginutil.AdditionalMiddleware\n", strings.Repeat(" ", 13))
 	}
-	// 是否添加默认中间件
-	if h.config.DefaultMiddleware != nil {
-		defaultMiddlewareSwitch := h.config.DefaultMiddleware
-		// 捕获异常中间件
-		if defaultMiddlewareSwitch.EnableRecoveryMiddleware {
-			if h.config.RunMode == gin.DebugMode {
-				fmt.Printf("[ginutil]   MiddlewareRegister %v --> ginutil.RecoveryMiddleware\n", strings.Repeat(" ", 13))
-			}
-			engine.Use(RecoveryMiddleware)
+	// 是否关闭默认中间件
+	defaultMiddlewareSwitch := h.config.DefaultMiddleware
+	// 捕获异常中间件
+	if !defaultMiddlewareSwitch.DisableRecoveryMiddleware {
+		if h.config.RunMode == gin.DebugMode {
+			fmt.Printf("[ginutil]   MiddlewareRegister %v --> github.com/52lu/go-helpers/ginutil.RecoveryMiddleware\n", strings.Repeat(" ", 13))
 		}
-		// 跨域cors
-		if defaultMiddlewareSwitch.EnableCorsMiddleware {
-			if h.config.RunMode == gin.DebugMode {
-				fmt.Printf("[ginutil]   MiddlewareRegister %v --> middlewareutil.CORSMiddleware\n", strings.Repeat(" ", 13))
-			}
-			engine.Use(middlewareutil.CORSMiddleware())
+		engine.Use(RecoveryMiddleware)
+	}
+	// 跨域cors
+	if !defaultMiddlewareSwitch.DisableCorsMiddleware {
+		if h.config.RunMode == gin.DebugMode {
+			fmt.Printf("[ginutil]   MiddlewareRegister %v --> github.com/52lu/go-helpers/middlewareutil.CORSMiddleware\n", strings.Repeat(" ", 13))
 		}
+		engine.Use(middlewareutil.CORSMiddleware())
 	}
 }
