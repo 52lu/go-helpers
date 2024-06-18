@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/52lu/go-helpers/middlewareutil"
 	"github.com/gin-gonic/gin"
+	"github.com/swaggo/swag"
 	"github.com/thoas/go-funk"
 	"log"
 	"net/http"
@@ -21,13 +22,14 @@ type httpServer struct {
 }
 
 type HttpServerConfig struct {
-	Port              int                      // 端口
-	RunMode           string                   // 运行默认;Debug 模式 (gin.DebugMode);
-	DelayExistSecond  int                      // 延迟多久退出，用于平滑重启
-	MiddlewareList    []gin.HandlerFunc        // 中间件
-	RouterFunc        []RouterRegisterFunc     // 路由函数
-	DefaultMiddleware *DefaultMiddlewareSwitch // 是否开启默认中间件
-	ExtendedMap       map[string]interface{}   // 扩展信息，用于启动时打印
+	Port                 int                      // 端口
+	RunMode              string                   // 运行默认;Debug 模式 (gin.DebugMode);
+	DelayExistSecond     int                      // 延迟多久退出，用于平滑重启
+	CommonMiddlewareList []gin.HandlerFunc        // 公共中间件
+	RouterFunc           []RouterRegisterFunc     // 路由函数
+	DefaultMiddleware    *DefaultMiddlewareSwitch // 是否开启默认中间件
+	ExtendedMap          map[string]interface{}   // 扩展信息，用于启动时打印
+	SwaggerSpec          *swag.Spec
 }
 type DefaultMiddlewareSwitch struct {
 	EnableRecoveryMiddleware bool // 捕获panic
@@ -68,14 +70,20 @@ func (h *httpServer) Start() {
 	engine := gin.Default()
 	// 判断是否开启默认中间件
 	h.enableDefaultMiddle(engine)
+	// 注册中间件
+	if len(h.config.CommonMiddlewareList) > 0 {
+		engine.Use(h.config.CommonMiddlewareList...)
+	}
+
 	// 注册路由
 	for _, registerFunc := range h.config.RouterFunc {
 		registerFunc(engine)
 	}
-	// 注册中间件
-	if len(h.config.MiddlewareList) > 0 {
-		engine.Use(h.config.MiddlewareList...)
+	// swagger初始化
+	if h.config.SwaggerSpec != nil {
+		h.swaggerInit(engine)
 	}
+
 	// 创建服务
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", h.config.Port),
@@ -123,6 +131,9 @@ func (h *httpServer) printRunInfo() {
 	fmt.Printf("运行模式: %v\n", h.config.RunMode)
 	fmt.Printf("平滑重启处理时间: %d秒 \n", h.config.DelayExistSecond)
 	fmt.Printf("服务访问地址: http://0.0.0.0:%v\n", h.config.Port)
+	if h.config.SwaggerSpec != nil {
+		fmt.Printf("SwaggerUI: http://0.0.0.0:%v/swagger/index.html\n", h.config.Port)
+	}
 	if len(h.config.ExtendedMap) > 0 {
 		keys := funk.Keys(h.config.ExtendedMap).([]string)
 		// 对键进行排序

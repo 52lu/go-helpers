@@ -20,8 +20,8 @@ func TestRun(t *testing.T) {
 
 func TestRunHttpServer(t *testing.T) {
 	server := NewHttpServer(HttpServerConfig{
-		Port:           8800,
-		MiddlewareList: nil,
+		Port:                 8800,
+		CommonMiddlewareList: nil,
 		RouterFunc: []RouterRegisterFunc{
 			addRoute,
 		},

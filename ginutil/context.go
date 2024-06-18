@@ -74,7 +74,7 @@ func GetUseTime(ctx context.Context) string {
 	}
 	useTimeInt64 := time.Now().UnixMilli() - beginTime
 	useTime := time.Duration(useTimeInt64) * time.Millisecond
-	return fmt.Sprintf(" %.3f", useTime.Seconds())
+	return fmt.Sprintf("%.3f", useTime.Seconds())
 }
 
 /*
