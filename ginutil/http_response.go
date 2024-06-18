@@ -22,8 +22,9 @@ type Additional struct {
 }
 
 var (
-	SUCCESS = 200
-	ERROR   = 0
+	RespSuccess  = 200 // 响应成功
+	RespNotFound = 404 // 路由不存在
+	RespError    = 0   // 处理异常
 )
 
 func setAdditional(ctx context.Context, res *Response) {
@@ -42,7 +43,7 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 		Data: data,
 	}
 	setAdditional(ctx, &response)
-	ctx.JSON(SUCCESS, response)
+	ctx.JSON(RespSuccess, response)
 }
 
 /**
@@ -70,7 +71,7 @@ func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 		Msg:  errMsg,
 	}
 	setAdditional(ctx, &response)
-	ctx.JSON(SUCCESS, response)
+	ctx.JSON(RespSuccess, response)
 }
 
 /*
@@ -80,7 +81,7 @@ func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 * @Date 2024-06-11 18:27:29
  */
 func Success(ctx *gin.Context) {
-	resultJson(ctx, SUCCESS, "success", nil)
+	resultJson(ctx, RespSuccess, "success", nil)
 }
 
 /*
@@ -91,7 +92,7 @@ func Success(ctx *gin.Context) {
 * @Date 2024-06-11 17:50:08
  */
 func SuccessWithData(ctx *gin.Context, data interface{}) {
-	resultJson(ctx, SUCCESS, "success", data)
+	resultJson(ctx, RespSuccess, "success", data)
 }
 
 /*
@@ -127,5 +128,5 @@ func FailResp(ctx *gin.Context, code int, errMsg string) {
 * @Date 2024-06-12 09:37:00
  */
 func Fail(ctx *gin.Context, errMsg string) {
-	resultErrorJson(ctx, ERROR, errMsg)
+	resultErrorJson(ctx, RespError, errMsg)
 }
