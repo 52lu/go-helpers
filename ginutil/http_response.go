@@ -2,6 +2,7 @@ package ginutil
 
 import (
 	"context"
+	"github.com/52lu/go-helpers/ctxutil"
 	"github.com/52lu/go-helpers/logutil"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -25,8 +26,8 @@ type Additional struct {
 func setAdditional(ctx context.Context, res *Response) {
 	res.Additional = Additional{
 		Time:    time.Now().Format(time.DateTime),
-		TraceId: GetTractId(ctx),
-		UseTime: GetUseTime(ctx),
+		TraceId: ctxutil.GetTractId(ctx),
+		UseTime: ctxutil.GetUseTime(ctx),
 	}
 }
 

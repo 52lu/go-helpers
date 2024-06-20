@@ -1,6 +1,7 @@
 package ginutil
 
 import (
+	"github.com/52lu/go-helpers/ctxutil"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"strings"
@@ -16,14 +17,14 @@ import (
  */
 func AdditionalMiddleware(ctx *gin.Context) {
 	// 开始时间
-	ctx.Set(GinContextBeginTimeMilli, time.Now().UnixMilli())
+	ctx.Set(ctxutil.GinContextBeginTimeMilli, time.Now().UnixMilli())
 	// traceId
-	ctx.Set(GinContextTraceId, strings.ReplaceAll(uuid.New().String(), "-", ""))
+	ctx.Set(ctxutil.GinContextTraceId, strings.ReplaceAll(uuid.New().String(), "-", ""))
 	// 客户端ip
-	ctx.Set(GinContextClientIp, ctx.ClientIP())
+	ctx.Set(ctxutil.GinContextClientIp, ctx.ClientIP())
 	// 客户端操作系统
-	ctx.Set(GinContextClientUserAgent, ctx.Request.UserAgent())
+	ctx.Set(ctxutil.GinContextClientUserAgent, ctx.Request.UserAgent())
 	// 请求接口路由
-	ctx.Set(GinContextRequestUrlPath, ctx.Request.URL.Path)
+	ctx.Set(ctxutil.GinContextRequestUrlPath, ctx.Request.URL.Path)
 	ctx.Next()
 }
