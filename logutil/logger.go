@@ -2,7 +2,7 @@ package logutil
 
 import (
 	"context"
-	"github.com/52lu/go-helpers/ginutil"
+	"github.com/52lu/go-helpers/ctxutil"
 	"go.uber.org/zap"
 	"sync"
 )
@@ -45,27 +45,27 @@ func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClien
 	var zapFields []zap.Field
 
 	// traceId
-	tractId := ginutil.GetTractId(ctx)
+	tractId := ctxutil.GetTractId(ctx)
 	if tractId != "" {
 		zapFields = append(zapFields, zap.String("trace_id", tractId))
 	}
 	// 请求耗时
-	useTime := ginutil.GetUseTime(ctx)
+	useTime := ctxutil.GetUseTime(ctx)
 	if useTime != "" {
 		zapFields = append(zapFields, zap.String("use_time", useTime))
 	}
 	// 客户端IP
-	clientIp := ginutil.GetClientIp(ctx)
+	clientIp := ctxutil.GetClientIp(ctx)
 	if clientIp != "" {
 		zapFields = append(zapFields, zap.String("client_ip", clientIp))
 	}
 	// 客户端信息
-	userAgent := ginutil.GetClientUserAgent(ctx)
+	userAgent := ctxutil.GetClientUserAgent(ctx)
 	if userAgent != "" {
 		zapFields = append(zapFields, zap.String("user_agent", userAgent))
 	}
 	// 请求地址
-	requestUrl := ginutil.GetRequestUrl(ctx)
+	requestUrl := ctxutil.GetRequestUrl(ctx)
 	if requestUrl != "" {
 		zapFields = append(zapFields, zap.String("request_url", requestUrl))
 	}

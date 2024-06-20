@@ -2,6 +2,7 @@ package ginutil
 
 import (
 	"context"
+	"github.com/52lu/go-helpers/logutil"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -21,12 +22,6 @@ type Additional struct {
 	UseTime string `json:"use_time"`
 }
 
-var (
-	RespSuccess  = 200 // 响应成功
-	RespNotFound = 404 // 路由不存在
-	RespError    = 0   // 处理异常
-)
-
 func setAdditional(ctx context.Context, res *Response) {
 	res.Additional = Additional{
 		Time:    time.Now().Format(time.DateTime),
@@ -42,6 +37,10 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 		Msg:  msg,
 		Data: data,
 	}
+	logutil.Info(ctx, "接口返回: "+ctx.Request.URL.Path, map[string]interface{}{
+		"url":  ctx.Request.URL.Path,
+		"data": response,
+	})
 	setAdditional(ctx, &response)
 	ctx.JSON(RespSuccess, response)
 }
@@ -56,16 +55,16 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 *  @Date 2021-11-22 12:38:33
 **/
 func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
-	//logger.Warning(ctx, "resultErrorJson", map[string]interface{}{
-	//	"data":     data,
-	//	"method":   ctx.Request.Method,
-	//	"url":      ctx.Request.URL,
-	//	"PostForm": ctx.Request.PostForm,
-	//	"Header":   ctx.Request.Header,
-	//	"Form":     ctx.Request.Form,
-	//	"Query":    ctx.Request.URL.Query(),
-	//	"error":    fmt.Sprintf("%+v", err),
-	//})
+	logutil.Warn(ctx, "接口处理异常:"+ctx.Request.URL.Path, map[string]interface{}{
+		"method":   ctx.Request.Method,
+		"url":      ctx.Request.URL.Path,
+		"PostForm": ctx.Request.PostForm,
+		"Body":     ctx.Request.Body,
+		"Header":   ctx.Request.Header,
+		"Form":     ctx.Request.Form,
+		"Query":    ctx.Request.URL.Query(),
+		"error":    errMsg,
+	})
 	response := Response{
 		Code: code,
 		Msg:  errMsg,
@@ -129,4 +128,15 @@ func FailResp(ctx *gin.Context, code int, errMsg string) {
  */
 func Fail(ctx *gin.Context, errMsg string) {
 	resultErrorJson(ctx, RespError, errMsg)
+}
+
+/*
+* @Description: 错误响应(参数枚举类型)
+* @Author: LiuQHui
+* @Param ctx
+* @Param enum
+* @Date 2024-06-20 10:34:03
+ */
+func FailRespEnum(ctx *gin.Context, enum RespEnum) {
+	resultErrorJson(ctx, enum.Code, enum.Msg)
 }

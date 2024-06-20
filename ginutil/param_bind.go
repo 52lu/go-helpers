@@ -21,6 +21,8 @@ import (
 * @Date 2024-06-12 11:33:28
  */
 func BindParamWithValidate(ctx *gin.Context, obj interface{}) error {
+	// 绑定header参数
+	_ = ctx.ShouldBindHeader(obj)
 	// 绑定url中的参数
 	_ = ctx.ShouldBindQuery(obj)
 	// 绑定表单参数
