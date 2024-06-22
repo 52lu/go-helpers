@@ -77,7 +77,7 @@ func (c *CreateHookPlugin) formatCreateRowData(tx *gorm.DB) (*hooktype.DataChang
 		DataID:     c.getDataId(tx),
 		Type:       RowChangeTypeCreate,
 		After:      &afterData,
-		OperateID:  c.getOperateId(ctx),
+		OperateID:  getOperateId(ctx),
 		LogID:      "",
 		EffectRows: int64(len(dataMapList)),
 	}

@@ -43,7 +43,7 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 		"data": response,
 	})
 	setAdditional(ctx, &response)
-	ctx.JSON(RespSuccess, response)
+	ctx.JSON(RespCodeSuccess, response)
 }
 
 /**
@@ -71,7 +71,7 @@ func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 		Msg:  errMsg,
 	}
 	setAdditional(ctx, &response)
-	ctx.JSON(RespSuccess, response)
+	ctx.JSON(RespCodeSuccess, response)
 }
 
 /*
@@ -81,7 +81,7 @@ func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 * @Date 2024-06-11 18:27:29
  */
 func Success(ctx *gin.Context) {
-	resultJson(ctx, RespSuccess, "success", nil)
+	resultJson(ctx, RespCodeSuccess, "success", nil)
 }
 
 /*
@@ -92,7 +92,7 @@ func Success(ctx *gin.Context) {
 * @Date 2024-06-11 17:50:08
  */
 func SuccessWithData(ctx *gin.Context, data interface{}) {
-	resultJson(ctx, RespSuccess, "success", data)
+	resultJson(ctx, RespCodeSuccess, "success", data)
 }
 
 /*
@@ -127,8 +127,12 @@ func FailResp(ctx *gin.Context, code int, errMsg string) {
 * @Param errMsg
 * @Date 2024-06-12 09:37:00
  */
-func Fail(ctx *gin.Context, errMsg string) {
-	resultErrorJson(ctx, RespError, errMsg)
+func FailMsg(ctx *gin.Context, errMsg string) {
+	resultErrorJson(ctx, RespCodeError, errMsg)
+}
+
+func FailError(ctx *gin.Context, err error) {
+	resultErrorJson(ctx, RespCodeError, err.Error())
 }
 
 /*

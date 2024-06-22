@@ -225,7 +225,6 @@ func (h *httpServer) enableDefaultMiddle(engine *gin.Engine) {
 func noRoute(group *gin.Engine) {
 	// 不存在路由
 	group.NoRoute(func(ctx *gin.Context) {
-		errMsg := fmt.Sprintf("%s,路由不存在或请求方式错误;当前请求方式: %s", ctx.Request.URL, ctx.Request.Method)
-		FailResp(ctx, RespErrorNotFound, errMsg)
+		FailRespEnum(ctx, RespEnumErrorNotFound)
 	})
 }

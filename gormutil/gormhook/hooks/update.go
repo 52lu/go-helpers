@@ -54,6 +54,9 @@ func (u *updateHookPlugin) rowBeforeUpdate(tx *gorm.DB) {
 			}
 			modifiedData = u.getModifiedData(beforeDataMap, afterDataMap)
 		}
+		if modifiedData == "{}" {
+			return
+		}
 		changeLog := &hooktype.DataChangeLogModel{
 			DataTable:  tx.Statement.Table,
 			DataID:     dataId,
@@ -62,7 +65,7 @@ func (u *updateHookPlugin) rowBeforeUpdate(tx *gorm.DB) {
 			EffectRows: int64(len(beforeDataList)),
 			After:      &afterData,
 			Modified:   &modifiedData,
-			OperateID:  u.getOperateId(ctx),
+			OperateID:  getOperateId(ctx),
 			LogID:      "", //TODO
 		}
 		// 填充具体执行SQL

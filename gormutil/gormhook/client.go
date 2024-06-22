@@ -34,7 +34,6 @@ func (g *gormHookPlugin) register(hookList []HookInterface) {
 
 var (
 	onceHookInstance sync.Once
-	defaultDB        *gorm.DB
 )
 
 /*
@@ -43,6 +42,11 @@ var (
 * @Date 2024-04-09 17:10:21
  */
 func SetGlobalHookInstance(db *gorm.DB) {
+	err := db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8mb4").
+		AutoMigrate(&hooktype.DataChangeLogModel{})
+	if err != nil {
+		panic(err)
+	}
 	onceHookInstance.Do(func() {
 		hookPluginConf := hooktype.HookPluginConf{
 			DB:                   db,

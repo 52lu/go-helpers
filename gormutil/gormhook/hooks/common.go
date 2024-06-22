@@ -18,7 +18,8 @@ type commonHook struct {
 }
 
 var (
-	jsonUtil = jsonutil.Json
+	jsonUtil   = jsonutil.Json
+	_operateId int64
 )
 
 // 变更类型：1增 2改 3删
@@ -58,15 +59,25 @@ func (h commonHook) getDataId(tx *gorm.DB) int64 {
 }
 
 /*
+* @Description: 设置操作人id
+* @Author: LiuQHui
+* @Param ctx
+* @Param operateId
+* @Date 2024-06-22 20:03:30
+ */
+func SetOperateId(ctx context.Context, operateId int64) {
+	_operateId = operateId
+}
+
+/*
 * @Description: 获取操作人id信息
 * @Author: LiuQHui
 * @Receiver h
 * @Param ctx
 * @Date 2024-04-09 15:26:17
  */
-func (h commonHook) getOperateId(ctx context.Context) int64 {
-
-	return 0
+func getOperateId(ctx context.Context) int64 {
+	return _operateId
 }
 
 /*

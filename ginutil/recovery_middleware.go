@@ -25,7 +25,7 @@ func RecoveryMiddleware(ctx *gin.Context) {
 				customErr = errutil.ThrowErrorWithPre(err.(error), "捕获错误")
 			}
 			// 错误响应
-			Fail(ctx, fmt.Sprintf("%v", customErr))
+			FailMsg(ctx, fmt.Sprintf("%v", customErr))
 			ctx.Abort()
 			return
 		}

@@ -75,7 +75,7 @@ func (d *deleteHookPlugin) formatDeleteRowData(tx *gorm.DB) (*hooktype.DataChang
 		Type:       RowChangeTypeDelete,
 		Before:     &beforeData,
 		EffectRows: int64(len(beforeDataList)),
-		OperateID:  d.getOperateId(ctx),
+		OperateID:  getOperateId(ctx),
 		LogID:      "",
 	}
 	return changeLog, nil
