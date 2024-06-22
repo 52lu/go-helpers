@@ -54,6 +54,30 @@ func (c *CreateHookPlugin) rowAfterCreate(tx *gorm.DB) {
 }
 
 /*
+* @Description: 解析消息
+* @Author: LiuQHui
+* @Receiver c
+* @Param afterData
+* @Return []map[string]interface{}
+* @Return error
+* @Date 2024-06-22 20:12:58
+ */
+func (c *CreateHookPlugin) parseData(afterData string) ([]map[string]interface{}, error) {
+	var dataMapList []map[string]interface{}
+	err := jsonUtil.UnmarshalFromString(afterData, &dataMapList)
+	if err != nil {
+		// 尝试解析
+		var tmpDataMap = make(map[string]interface{})
+		if err := jsonUtil.UnmarshalFromString(afterData, &tmpDataMap); err == nil {
+			dataMapList = append(dataMapList, tmpDataMap)
+			return dataMapList, nil
+		}
+		return nil, err
+	}
+	return dataMapList, nil
+}
+
+/*
 * @Description: 格式化创建数据
 * @Author: LiuQHui
 * @Receiver c
@@ -63,8 +87,7 @@ func (c *CreateHookPlugin) rowAfterCreate(tx *gorm.DB) {
 func (c *CreateHookPlugin) formatCreateRowData(tx *gorm.DB) (*hooktype.DataChangeLogModel, error) {
 	ctx := tx.Statement.Context
 	afterData, _ := jsonUtil.MarshalToString(tx.Statement.Dest)
-	var dataMapList []map[string]interface{}
-	err := jsonUtil.UnmarshalFromString(afterData, &dataMapList)
+	dataMapList, err := c.parseData(afterData)
 	if err != nil {
 		return nil, err
 	}

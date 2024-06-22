@@ -55,7 +55,15 @@ func (h commonHook) getDataId(tx *gorm.DB) int64 {
 		// 如果是切片，返回0，因为我们不知道应该使用哪个ID
 		return 0
 	}
-	return tx.Statement.ReflectValue.FieldByName("ID").Int()
+	v := tx.Statement.ReflectValue.FieldByName("ID")
+	switch v.Kind() {
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		return v.Int()
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return int64(v.Uint())
+	default:
+		return 0
+	}
 }
 
 /*
