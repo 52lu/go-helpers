@@ -48,6 +48,8 @@ type DefaultMiddlewareSwitch struct {
 
 type RouterRegisterFunc func(group *gin.Engine)
 
+var _httpServer *httpServer
+
 /*
 * @Description: 实例化服务
 * @Author: LiuQHui
@@ -56,9 +58,10 @@ type RouterRegisterFunc func(group *gin.Engine)
 * @Date 2024-06-11 15:46:47
  */
 func NewHttpServer(conf HttpServerConfig) *httpServer {
-	return &httpServer{
+	_httpServer = &httpServer{
 		config: conf,
 	}
+	return _httpServer
 }
 
 /*

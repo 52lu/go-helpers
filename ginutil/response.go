@@ -38,10 +38,12 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 		Msg:  msg,
 		Data: data,
 	}
-	logutil.Info(ctx, "接口返回: "+ctx.Request.URL.Path, map[string]interface{}{
-		"url":  ctx.Request.URL.Path,
-		"data": response,
-	})
+	if _httpServer != nil && _httpServer.config.RunMode == gin.DebugMode {
+		logutil.Debug(ctx, "接口返回: "+ctx.Request.URL.Path, map[string]interface{}{
+			"url":  ctx.Request.URL.Path,
+			"data": response,
+		})
+	}
 	setAdditional(ctx, &response)
 	ctx.JSON(RespCodeSuccess, response)
 }
@@ -81,7 +83,18 @@ func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 * @Date 2024-06-11 18:27:29
  */
 func Success(ctx *gin.Context) {
-	resultJson(ctx, RespCodeSuccess, "success", nil)
+	resultJson(ctx, RespCodeSuccess, RespEnumSuccess.Msg, nil)
+}
+
+/*
+* @Description: 成功响应(指定消息)
+* @Author: LiuQHui
+* @Param ctx
+* @Param msg
+* @Date 2024-06-23 14:07:34
+ */
+func SuccessMsg(ctx *gin.Context, msg string) {
+	resultJson(ctx, RespCodeSuccess, msg, nil)
 }
 
 /*
@@ -92,7 +105,7 @@ func Success(ctx *gin.Context) {
 * @Date 2024-06-11 17:50:08
  */
 func SuccessWithData(ctx *gin.Context, data interface{}) {
-	resultJson(ctx, RespCodeSuccess, "success", data)
+	resultJson(ctx, RespCodeSuccess, RespEnumSuccess.Msg, data)
 }
 
 /*
