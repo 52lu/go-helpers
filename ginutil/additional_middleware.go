@@ -31,22 +31,14 @@ func AdditionalMiddleware(ctx *gin.Context) {
 	ctx.Set(ctxutil.GinContextClientUserAgent, ctx.Request.UserAgent())
 	// 请求接口路由
 	ctx.Set(ctxutil.GinContextRequestUrlPath, ctx.Request.URL.Path)
-	ctx.Next()
-}
-
-/*
-* @Description: 请求入口记录
-* @Author: LiuQHui
-* @Param ctx
-* @Date 2024-08-27 15:35:46
- */
-func RequestEntranceLogMiddleware(ctx *gin.Context) {
 	bodyBytes, _ := io.ReadAll(ctx.Request.Body)
 	requestUri := ctx.Request.RequestURI
-	logutil.Info(ctx, "RequestEntrance:"+requestUri, map[string]interface{}{
-		"header":     ctx.Request.Header,
-		"body":       string(bodyBytes),
-		"remoteAddr": ctx.Request.RemoteAddr,
+	logutil.Info(ctx, "Request: "+requestUri, map[string]interface{}{
+		"header":    ctx.Request.Header,
+		"body":      string(bodyBytes),
+		"clientIp":  ctx.ClientIP(),
+		"remoteIp":  ctx.RemoteIP(),
+		"userAgent": ctx.Request.UserAgent(),
 	})
 	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 	ctx.Next()
