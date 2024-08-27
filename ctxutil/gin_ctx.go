@@ -10,6 +10,7 @@ const (
 	GinContextTraceId         = "gin-context-TraceId"         // traceId
 	GinContextBeginTimeMilli  = "gin-context-BeginTimeMilli"  // 开始时间(毫秒)
 	GinContextClientIp        = "gin-context-ClientIp"        // 客户端ip
+	GinContextRemoteIp        = "gin-context-RemoteIp"        // 远程ip
 	GinContextClientUserAgent = "gin-context-ClientUserAgent" // 客户端操作系统
 	GinContextRequestUrlPath  = "gin-context-RequestUrlPath"  // 请求接口路由
 )

@@ -204,7 +204,7 @@ func (h *httpServer) printRunInfo() {
  */
 func (h *httpServer) enableDefaultMiddle(engine *gin.Engine) {
 	// 追加信息到上下文中间件
-	engine.Use(AdditionalMiddleware)
+	engine.Use(RequestEntranceLogMiddleware, AdditionalMiddleware)
 	if h.config.RunMode == gin.DebugMode {
 		fmt.Printf("[ginutil]   MiddlewareRegister %v --> github.com/52lu/go-helpers/ginutil.AdditionalMiddleware\n", strings.Repeat(" ", 13))
 	}
