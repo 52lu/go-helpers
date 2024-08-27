@@ -25,6 +25,7 @@ type HttpServerConfig struct {
 	Port                 int                     // 端口
 	RunMode              string                  // 运行默认;Debug 模式 (gin.DebugMode);
 	RunEnv               string                  // 运行环境
+	OpenFavicon          bool                    // 打开favicon.ico请求
 	DelayExistSecond     int                     // 延迟多久退出，用于平滑重启
 	CommonMiddlewareList []gin.HandlerFunc       // 公共中间件
 	RouterFunc           []RouterRegisterFunc    // 路由函数
@@ -113,6 +114,12 @@ func (h *httpServer) Start() {
 	// 注册中间件
 	if len(h.config.CommonMiddlewareList) > 0 {
 		engine.Use(h.config.CommonMiddlewareList...)
+	}
+	// 默认不处理 favicon.ico请求
+	if !h.config.OpenFavicon {
+		engine.GET("/favicon.ico", func(c *gin.Context) {
+			c.Status(http.StatusNoContent)
+		})
 	}
 	// 注册路由
 	for _, registerFunc := range h.config.RouterFunc {
