@@ -27,12 +27,14 @@ type CompareDateResult struct {
  * @Return string
 **/
 func GetDateFormat(date string) string {
-	if _, err := time.Parse("2006-01-02", date); err == nil {
-		return "2006-01-02"
-	} else if _, err := time.Parse("2006-01-02 15:04:05", date); err == nil {
-		return "2006-01-02 15:04:05"
-	} else if _, err := time.Parse("2006-01-02 15:04:05.000", date); err == nil {
-		return "2006-01-02 15:04:05.000"
+	if _, err := time.Parse(time.DateOnly, date); err == nil {
+		return time.DateOnly
+	} else if _, err := time.Parse(time.DateTime, date); err == nil {
+		return time.DateTime
+	} else if _, err := time.Parse(time.StampMilli, date); err == nil {
+		return time.StampMilli
+	} else if _, err := time.Parse(time.TimeOnly, date); err == nil {
+		return time.TimeOnly
 	}
 	return ""
 }
