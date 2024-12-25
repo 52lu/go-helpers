@@ -15,15 +15,15 @@ var (
 * @Description: 获取日志实例
 * @Author: LiuQHui
 * @Param ctx
-* @Return *loggerClient
+* @Return *LoggerClient
 * @Date 2024-06-12 16:49:58
  */
-func getLogger(ctx context.Context) *loggerClient {
+func getLogger(ctx context.Context) *LoggerClient {
 	if _loggerClient == nil {
 		_proxyLock.Lock()
 		defer _proxyLock.Unlock()
 		client, _ := newZapLogDefaultClient()
-		_loggerClient = &loggerClient{
+		_loggerClient = &LoggerClient{
 			zapLoggerClient: client,
 		}
 	}

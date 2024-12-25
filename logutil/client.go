@@ -5,10 +5,10 @@ import (
 )
 
 var (
-	_loggerClient *loggerClient // 日志客户端
+	_loggerClient *LoggerClient // 日志客户端
 )
 
-type loggerClient struct {
+type LoggerClient struct {
 	zapLoggerClient *zapLogClient
 }
 
@@ -23,40 +23,59 @@ func SetLogger(cf LogConfig) {
 	if err != nil {
 		return
 	}
-	_loggerClient = &loggerClient{
+	_loggerClient = &LoggerClient{
 		zapLoggerClient: zapClient,
 	}
 }
 
-func (l loggerClient) Debug(ctx context.Context, message string, content map[string]interface{}) {
+/*
+* @Description: 获取logger
+* @Author: LiuQHui
+* @Param cf
+* @Return *LoggerClient
+* @Return error
+* @Date 2024-12-25 15:55:38
+ */
+func NewLogger(cf LogConfig) (*LoggerClient, error) {
+	zapClient, err := newZapLogClient(cf)
+	if err != nil {
+		return nil, err
+	}
+	loggerClient := &LoggerClient{
+		zapLoggerClient: zapClient,
+	}
+	return loggerClient, nil
+}
+
+func (l LoggerClient) Debug(ctx context.Context, message string, content map[string]interface{}) {
 	l.writeMapContent(ctx, LogLevelDebug, message, content)
 }
 
-func (l loggerClient) Debugf(ctx context.Context, message string, fmtArgs ...interface{}) {
+func (l LoggerClient) Debugf(ctx context.Context, message string, fmtArgs ...interface{}) {
 	l.writeContentF(ctx, LogLevelDebug, message, fmtArgs...)
 }
 
-func (l loggerClient) Info(ctx context.Context, message string, content map[string]interface{}) {
+func (l LoggerClient) Info(ctx context.Context, message string, content map[string]interface{}) {
 	l.writeMapContent(ctx, LogLevelInfo, message, content)
 }
 
-func (l loggerClient) Infof(ctx context.Context, message string, fmtArgs ...interface{}) {
+func (l LoggerClient) Infof(ctx context.Context, message string, fmtArgs ...interface{}) {
 	l.writeContentF(ctx, LogLevelInfo, message, fmtArgs...)
 }
 
-func (l loggerClient) Warn(ctx context.Context, message string, content map[string]interface{}) {
+func (l LoggerClient) Warn(ctx context.Context, message string, content map[string]interface{}) {
 	l.writeMapContent(ctx, LogLevelWarn, message, content)
 }
 
-func (l loggerClient) Warnf(ctx context.Context, message string, fmtArgs ...interface{}) {
+func (l LoggerClient) Warnf(ctx context.Context, message string, fmtArgs ...interface{}) {
 	l.writeContentF(ctx, LogLevelWarn, message, fmtArgs...)
 }
 
-func (l loggerClient) Error(ctx context.Context, message string, content map[string]interface{}) {
+func (l LoggerClient) Error(ctx context.Context, message string, content map[string]interface{}) {
 	l.writeMapContent(ctx, LogLevelError, message, content)
 }
 
-func (l loggerClient) Errorf(ctx context.Context, message string, fmtArgs ...interface{}) {
+func (l LoggerClient) Errorf(ctx context.Context, message string, fmtArgs ...interface{}) {
 	l.writeContentF(ctx, LogLevelError, message, fmtArgs...)
 }
 
@@ -70,7 +89,7 @@ func (l loggerClient) Errorf(ctx context.Context, message string, fmtArgs ...int
 * @Param fmtArgs
 * @Date 2024-06-12 18:00:29
  */
-func (l loggerClient) writeContentF(ctx context.Context, loglevel string, message string, fmtArgs ...interface{}) {
+func (l LoggerClient) writeContentF(ctx context.Context, loglevel string, message string, fmtArgs ...interface{}) {
 	sugar := l.zapLoggerClient.zapLogger.Sugar()
 	defer sugar.Sync()
 	switch loglevel {
@@ -95,7 +114,7 @@ func (l loggerClient) writeContentF(ctx context.Context, loglevel string, messag
 * @Param content
 * @Date 2024-06-12 18:02:14
  */
-func (l loggerClient) writeMapContent(ctx context.Context, loglevel string, message string, content map[string]interface{}) {
+func (l LoggerClient) writeMapContent(ctx context.Context, loglevel string, message string, content map[string]interface{}) {
 	sugar := l.zapLoggerClient.zapLogger.Sugar()
 	defer sugar.Sync()
 	key := "body"
