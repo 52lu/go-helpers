@@ -29,7 +29,7 @@ func SetLogger(cf LogConfig) {
 }
 
 /*
-* @Description: 获取logger
+* @Description: 获取logger实例
 * @Author: LiuQHui
 * @Param cf
 * @Return *LoggerClient
