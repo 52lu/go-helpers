@@ -22,6 +22,10 @@ import (
 * @Date 2024-05-28 19:21:55
  */
 func (g genUtilClient) generateBaseDao() error {
+	if fileutil.ExistPath(g.conf.OutPath) {
+		fmt.Printf("%v 文件已经存在", g.conf.OutPath)
+		return nil
+	}
 	// 判断目录是否存在，不存在则创建
 	if err := fileutil.CreatePath(g.conf.OutPath); err != nil {
 		return err
