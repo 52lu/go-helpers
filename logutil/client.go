@@ -79,6 +79,10 @@ func (l LoggerClient) Errorf(ctx context.Context, message string, fmtArgs ...int
 	l.writeContentF(ctx, LogLevelError, message, fmtArgs...)
 }
 
+func (l LoggerClient) Printf(s string, fmtArgs ...interface{}) {
+	l.writeContentF(context.Background(), LogLevelDebug, s, fmtArgs...)
+}
+
 /*
 * @Description: 记录日志
 * @Author: LiuQHui

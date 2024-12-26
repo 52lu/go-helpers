@@ -58,7 +58,6 @@ func newZapLogClient(cf LogConfig) (*zapLogClient, error) {
 	zapCore := zapcore.NewCore(encoder, writeSyncer, client.getLevel())
 	// 创建logger
 	client.zapLogger = zap.New(zapCore, zap.AddCaller(), zap.AddStacktrace(zap.ErrorLevel))
-
 	return client, nil
 }
 

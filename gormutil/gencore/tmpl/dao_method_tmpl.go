@@ -13,7 +13,7 @@ const DaoCommonByIdMethod = `
 * @Date {{.DateTime}}
  */
 func ({{.ReceiverPre}} {{.DaoName}}) UpdateById(id int64,values interface{}) error  {
-	_, err := {{.ReceiverPre}}.query.Where(query.{{.ModelName}}.ID.Eq(id)).Updates(values)
+	_, err := {{.ReceiverPre}}.Query.Where(query.{{.ModelName}}.ID.Eq(id)).Updates(values)
 	return err
 }
 
@@ -27,6 +27,19 @@ func ({{.ReceiverPre}} {{.DaoName}}) UpdateById(id int64,values interface{}) err
 * @Date {{.DateTime}}
  */
 func ({{.ReceiverPre}} {{.DaoName}}) FindById(id int64) (*model.{{.ModelName}}, error)  {
-	return {{.ReceiverPre}}.query.FindById(id)
+	return {{.ReceiverPre}}.Query.FindById(id)
+}
+
+/*
+* @Description: 根据do查询
+* @Author: gorm.io/gen
+* @Receiver {{.ReceiverPre}}
+* @Param id
+* @Return *model.{{.ModelName}}
+* @Return error
+* @Date {{.DateTime}}
+ */
+func ({{.ReceiverPre}} {{.DaoName}}) FindByIDO(do query.I{{.ModelName}}Do) ([]*model.{{.ModelName}}, error)  {
+	return do.Find()
 }
 `
