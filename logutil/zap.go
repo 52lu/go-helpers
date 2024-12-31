@@ -2,10 +2,12 @@ package logutil
 
 import (
 	"fmt"
+	"github.com/52lu/go-helpers/fileutil"
 	"github.com/52lu/go-helpers/pathutil"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
 	"time"
 )
 
@@ -129,13 +131,21 @@ func (z *zapLogClient) getEncodeTime(t time.Time, enc zapcore.PrimitiveArrayEnco
 * @Date 2024-06-12 14:19:19
  */
 func (z *zapLogClient) getLumberjackWriteSyncer() zapcore.WriteSyncer {
+	// 判断文件是否存在
+	fileName := fmt.Sprintf("%s/%s.log", z.conf.Path, z.conf.FileName)
+	if !fileutil.ExistFile(fileName) {
+		file, _ := os.Create(fileName)
+		if file != nil {
+			defer file.Close()
+		}
+	}
 	lumberjackConfig := z.conf.LumberJackConf
 	lumberjackLogger := &lumberjack.Logger{
-		Filename:   fmt.Sprintf("%s/%s.log", z.conf.Path, z.conf.FileName), //日志文件名
-		MaxSize:    lumberjackConfig.MaxSize,                               //单文件最大容量(单位MB)
-		MaxBackups: lumberjackConfig.MaxBackups,                            //保留旧文件的最大数量
-		MaxAge:     lumberjackConfig.MaxAge,                                // 旧文件最多保存几天
-		Compress:   lumberjackConfig.Compress,                              // 是否压缩/归档旧文件
+		Filename:   fileName,                    //日志文件名
+		MaxSize:    lumberjackConfig.MaxSize,    //单文件最大容量(单位MB)
+		MaxBackups: lumberjackConfig.MaxBackups, //保留旧文件的最大数量
+		MaxAge:     lumberjackConfig.MaxAge,     // 旧文件最多保存几天
+		Compress:   lumberjackConfig.Compress,   // 是否压缩/归档旧文件
 	}
 	// 设置日志文件切割
 	return zapcore.AddSync(lumberjackLogger)
