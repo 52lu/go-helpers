@@ -28,7 +28,7 @@ func getLogger(ctx context.Context) *LoggerClient {
 		}
 	}
 	// 从上下文中获取信息
-	_loggerClient.zapLoggerClient = addCommonFromCtx(ctx, _loggerClient.zapLoggerClient)
+	//addCommonFromCtx(ctx, _loggerClient.zapLoggerClient)
 	return _loggerClient
 }
 
@@ -40,10 +40,8 @@ func getLogger(ctx context.Context) *LoggerClient {
 * @Return *zapLogClient
 * @Date 2024-06-12 17:33:30
  */
-func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClient {
-	zapLogger := zapClient.zapLogger
+func getZapFieldCommonFromCtx(ctx context.Context) []zap.Field {
 	var zapFields []zap.Field
-
 	// traceId
 	tractId := ctxutil.GetTractId(ctx)
 	if tractId != "" {
@@ -69,11 +67,7 @@ func addCommonFromCtx(ctx context.Context, zapClient *zapLogClient) *zapLogClien
 	if requestUrl != "" {
 		zapFields = append(zapFields, zap.String("request_url", requestUrl))
 	}
-	if len(zapFields) > 0 {
-		zapLogger = zapLogger.With(zapFields...)
-	}
-	zapClient.zapLogger = zapLogger
-	return zapClient
+	return zapFields
 }
 
 /*

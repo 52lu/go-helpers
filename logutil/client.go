@@ -2,6 +2,8 @@ package logutil
 
 import (
 	"context"
+	"fmt"
+	"github.com/52lu/go-helpers/ctxutil"
 )
 
 var (
@@ -26,6 +28,10 @@ func SetLogger(cf LogConfig) {
 	_loggerClient = &LoggerClient{
 		zapLoggerClient: zapClient,
 	}
+}
+
+func GetLogger() *LoggerClient {
+	return _loggerClient
 }
 
 /*
@@ -94,18 +100,46 @@ func (l LoggerClient) Printf(s string, fmtArgs ...interface{}) {
 * @Date 2024-06-12 18:00:29
  */
 func (l LoggerClient) writeContentF(ctx context.Context, loglevel string, message string, fmtArgs ...interface{}) {
-	sugar := l.zapLoggerClient.zapLogger.Sugar()
-	defer sugar.Sync()
-	switch loglevel {
-	case LogLevelDebug:
-		sugar.Debugf(message, fmtArgs...)
-	case LogLevelInfo:
-		sugar.Infof(message, fmtArgs...)
-	case LogLevelWarn:
-		sugar.Warnf(message, fmtArgs...)
-	case LogLevelError:
-		sugar.Errorf(message, fmtArgs...)
+	content := fmt.Sprintf(message, fmtArgs...)
+	l.writeMapContent(ctx, loglevel, content, nil)
+}
+
+/*
+* @Description: 获取公共字段
+* @Author: LiuQHui
+* @Receiver l
+* @Param ctx
+* @Return map[string]interface{}
+* @Date 2025-01-09 15:24:11
+ */
+func (l LoggerClient) getCommonField(ctx context.Context) map[string]interface{} {
+	commonFieldMap := make(map[string]interface{})
+	// traceId
+	tractId := ctxutil.GetTractId(ctx)
+	if tractId != "" {
+		commonFieldMap["trace_id"] = tractId
 	}
+	// 请求耗时
+	useTime := ctxutil.GetUseTime(ctx)
+	if useTime != "" {
+		commonFieldMap["use_time"] = useTime
+	}
+	// 客户端IP
+	clientIp := ctxutil.GetClientIp(ctx)
+	if clientIp != "" {
+		commonFieldMap["client_ip"] = clientIp
+	}
+	// 客户端信息
+	userAgent := ctxutil.GetClientUserAgent(ctx)
+	if userAgent != "" {
+		commonFieldMap["user_agent"] = userAgent
+	}
+	// 请求地址
+	requestUrl := ctxutil.GetRequestUrl(ctx)
+	if requestUrl != "" {
+		commonFieldMap["request_url"] = requestUrl
+	}
+	return commonFieldMap
 }
 
 /*
@@ -119,8 +153,21 @@ func (l LoggerClient) writeContentF(ctx context.Context, loglevel string, messag
 * @Date 2024-06-12 18:02:14
  */
 func (l LoggerClient) writeMapContent(ctx context.Context, loglevel string, message string, content map[string]interface{}) {
-	sugar := l.zapLoggerClient.zapLogger.Sugar()
+	if content == nil {
+		content = make(map[string]interface{})
+	}
+	////sugar := l.zapLoggerClient.zapLogger.Sugar()
+	////defer sugar.Sync()
+	//// 添加自定义字段
+	//commonFieldMap := l.getCommonField(ctx)
+	//for k, v := range commonFieldMap {
+	//	content[k] = v
+	//}
+	zapField := getZapFieldCommonFromCtx(ctx)
+	subLogger := l.zapLoggerClient.zapLogger.With(zapField...)
+	sugar := subLogger.Sugar()
 	defer sugar.Sync()
+
 	key := "body"
 	switch loglevel {
 	case LogLevelDebug:
