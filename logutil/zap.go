@@ -55,7 +55,8 @@ func newZapLogClient(cf LogConfig) (*zapLogClient, error) {
 		encoder = zapcore.NewConsoleEncoder(client.getEncoderConfig())
 	}
 	// 设置日志文件切割
-	writeSyncer := zapcore.AddSync(client.getLumberjackWriteSyncer())
+	//writeSyncer := zapcore.AddSync(client.getLumberjackWriteSyncer())
+	writeSyncer := zapcore.AddSync(client.getLogWriter())
 	// 创建NewCore
 	zapCore := zapcore.NewCore(encoder, writeSyncer, client.getLevel())
 	// 创建logger
@@ -151,18 +152,11 @@ func (z *zapLogClient) getLumberjackWriteSyncer() zapcore.WriteSyncer {
 	return zapcore.AddSync(lumberjackLogger)
 }
 
-///*
-//* @Description: 获取日志文件名
-//* @Author: LiuQHui
-//* @Param cf
-//* @Return string
-//* @Date 2024-06-12 14:19:45
-// */
-//func (z *zapLogClient) getLogFile() string {
-//	//fileFormat := time.Now().Format(z.conf.FileTimeFormat)
-//	fileName := strings.Join([]string{
-//		z.conf.FileName,
-//		//fileFormat,
-//		"log"}, ".")
-//	return path.Join(z.conf.Path, fileName)
-//}
+// getLogWriter 返回 zapcore.WriteSyncer，用于将日志输出到 DailyLogger
+func (z *zapLogClient) getLogWriter() zapcore.WriteSyncer {
+	// 初始化 DailyLogger
+	fileName := fmt.Sprintf("%s/%s.log", z.conf.Path, z.conf.FileName)
+	dailyLogger := NewDailyLogger(fileName, z.conf.LumberJackConf)
+	// 将日志同时输出到控制台和文件
+	return zapcore.NewMultiWriteSyncer(zapcore.AddSync(dailyLogger))
+}

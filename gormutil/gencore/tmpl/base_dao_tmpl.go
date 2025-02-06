@@ -8,6 +8,7 @@ package {{.PackageName}}
 import (
 	"context"
 	"github.com/52lu/go-helpers/gormutil/gormhook"
+	"github.com/52lu/go-helpers/gormutil/gormtype"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"sync"
@@ -30,10 +31,10 @@ var (
 * @Return *gorm.DB
 * @Date {{.DateTime}}
  */
-func NewWithHookConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
+func NewWithHookConnect(ctx context.Context,  connectConfig *gormtype.OrmConnectConfig) *gorm.DB {
 	syncOnceHook.Do(func() {
 		// 获取连接池
-		hookDB, err = getDBConnectPool(dsnOption...)
+		hookDB, err = getDBConnectPool(connectConfig)
 		if err != nil {
 			panic(err)
 		}
@@ -50,10 +51,10 @@ func NewWithHookConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
 * @Param dsnOption
 * @Date {{.DateTime}}
  */
-func NewDefaultConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
+func NewDefaultConnect(ctx context.Context, connectConfig *gormtype.OrmConnectConfig) *gorm.DB {
 	syncOnceDefault.Do(func() {
 		// 连接数据库
-		defaultDB, err = getDBConnectPool(dsnOption...)
+		defaultDB, err = getDBConnectPool(connectConfig)
 		if err != nil {
 			panic(err)
 		}
@@ -68,8 +69,8 @@ func NewDefaultConnect(ctx context.Context, dsnOption ...string) *gorm.DB {
 * @Param dsnOption
 * @Date {{.DateTime}}
  */
-func NewDaoQueryWithHookSession(ctx context.Context,dsnOption ...string) *queryCtx {
-	SetDefault(NewWithHookConnect(ctx,dsnOption...))
+func NewDaoQueryWithHookSession(ctx context.Context,connectConfig *gormtype.OrmConnectConfig) *queryCtx {
+	SetDefault(NewWithHookConnect(ctx,connectConfig))
 	querySession = Q.WithContext(ctx)
 	return querySession
 }
@@ -81,8 +82,8 @@ func NewDaoQueryWithHookSession(ctx context.Context,dsnOption ...string) *queryC
 * @Param dsnOption
 * @Date {{.DateTime}}
  */
-func NewDaoQuerySession(ctx context.Context,dsnOption ...string) *queryCtx {
-	SetDefault(NewDefaultConnect(ctx,dsnOption...))
+func NewDaoQuerySession(ctx context.Context,connectConfig *gormtype.OrmConnectConfig) *queryCtx {
+	SetDefault(NewDefaultConnect(ctx,connectConfig))
 	querySession = Q.WithContext(ctx)
 	return querySession
 }
@@ -94,7 +95,7 @@ func NewDaoQuerySession(ctx context.Context,dsnOption ...string) *queryCtx {
 * @Return *gorm.DB
 * @Date {{.DateTime}}
  */
-func getDBConnectPool(dsnOption ...string) (*gorm.DB, error) {
+func getDBConnectPool(connectConfig *gormtype.OrmConnectConfig) (*gorm.DB, error) {
 	var mysqlDsn string
 	if len(dsnOption) > 0 {
 		mysqlDsn = dsnOption[0]
@@ -105,6 +106,10 @@ func getDBConnectPool(dsnOption ...string) (*gorm.DB, error) {
 	if mysqlDsn == "" {
 		panic("未设置MySQL连接配置")
 	}
+
+    
+
+
 	// 连接数据库
 	return gorm.Open(mysql.Open(mysqlDsn))
 }
