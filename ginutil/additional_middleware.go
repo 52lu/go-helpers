@@ -25,8 +25,6 @@ func AdditionalMiddleware(ctx *gin.Context) {
 	// 开始时间
 	ctx.Set(ctxutil.GinContextBeginTimeMilli, time.Now().UnixMilli())
 	// traceId
-	//hostname, _ := os.Hostname()
-	//tractId := fmt.Sprintf("%s_%s", hostname, strings.ReplaceAll(uuid.New().String(), "-", ""))
 	ctx.Set(ctxutil.GinContextTraceId, NewTraceId())
 	// 客户端ip
 	ctx.Set(ctxutil.GinContextClientIp, ctx.ClientIP())
