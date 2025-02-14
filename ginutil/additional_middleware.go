@@ -2,11 +2,14 @@ package ginutil
 
 import (
 	"bytes"
+	"crypto/md5"
+	"fmt"
 	"github.com/52lu/go-helpers/ctxutil"
 	"github.com/52lu/go-helpers/logutil"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"io"
+	"os"
 	"strings"
 	"time"
 )
@@ -22,7 +25,9 @@ func AdditionalMiddleware(ctx *gin.Context) {
 	// 开始时间
 	ctx.Set(ctxutil.GinContextBeginTimeMilli, time.Now().UnixMilli())
 	// traceId
-	ctx.Set(ctxutil.GinContextTraceId, strings.ReplaceAll(uuid.New().String(), "-", ""))
+	//hostname, _ := os.Hostname()
+	//tractId := fmt.Sprintf("%s_%s", hostname, strings.ReplaceAll(uuid.New().String(), "-", ""))
+	ctx.Set(ctxutil.GinContextTraceId, NewTraceId())
 	// 客户端ip
 	ctx.Set(ctxutil.GinContextClientIp, ctx.ClientIP())
 	// RemoteIP
@@ -42,4 +47,11 @@ func AdditionalMiddleware(ctx *gin.Context) {
 	})
 	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 	ctx.Next()
+}
+
+func NewTraceId() string {
+	hostname, _ := os.Hostname()
+	uuidStr := strings.ReplaceAll(uuid.New().String(), "-", "")
+	hash := md5.Sum([]byte(uuidStr))
+	return fmt.Sprintf("%s_%x", hostname, hash[0:12])
 }

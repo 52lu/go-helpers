@@ -24,6 +24,7 @@ type GenConfig struct {
 	OutPath            string   // 输出目录
 	TablePre           string   // 表前缀
 	IgnoreTables       []string // 忽略表
+	OnlyGenTables      []string // 仅生成指定表
 	ModelSuffix        string   // 生成的mode后缀名
 	GenConf            *gen.Config
 	OverDaoFile        bool // 覆盖dao文件
@@ -223,6 +224,12 @@ func (g genUtilClient) _runGormGen() ([]interface{}, error) {
 		if funk.ContainsString(g.conf.IgnoreTables, tableName) {
 			continue
 		}
+		if len(g.conf.OnlyGenTables) > 0 {
+			if !funk.ContainsString(g.conf.OnlyGenTables, tableName) {
+				continue
+			}
+		}
+
 		tableList = append(tableList, tableName)
 	}
 	// 生成model
