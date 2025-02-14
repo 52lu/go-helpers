@@ -2,6 +2,7 @@ package ginutil
 
 import (
 	"bytes"
+	"context"
 	"crypto/md5"
 	"fmt"
 	"github.com/52lu/go-helpers/ctxutil"
@@ -45,6 +46,21 @@ func AdditionalMiddleware(ctx *gin.Context) {
 	})
 	ctx.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 	ctx.Next()
+}
+
+/*
+* @Description: 获取上下文
+* @Author: LiuQHui
+* @Param ctx
+* @Return context.Context
+* @Date 2025-02-14 12:14:34
+ */
+func GetNewCtx(ctx context.Context) context.Context {
+	// 开始时间
+	newCtx := context.WithValue(ctx, ctxutil.GinContextBeginTimeMilli, time.Now().UnixMilli())
+	// traceId
+	newCtx = context.WithValue(newCtx, ctxutil.GinContextTraceId, NewTraceId())
+	return newCtx
 }
 
 func NewTraceId() string {
