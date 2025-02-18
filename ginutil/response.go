@@ -59,14 +59,14 @@ func resultJson(ctx *gin.Context, code int, msg string, data interface{}) {
 **/
 func resultErrorJson(ctx *gin.Context, code int, errMsg string) {
 	logutil.Warn(ctx, "接口处理异常:"+ctx.Request.URL.Path, map[string]interface{}{
-		"method":   ctx.Request.Method,
-		"url":      ctx.Request.URL.Path,
-		"PostForm": ctx.Request.PostForm,
-		"Body":     ctx.Request.Body,
-		"Header":   ctx.Request.Header,
-		"Form":     ctx.Request.Form,
-		"Query":    ctx.Request.URL.Query(),
-		"error":    errMsg,
+		"method":         ctx.Request.Method,
+		"url":            ctx.Request.URL.Path,
+		"PostForm":       ctx.Request.PostForm,
+		"Body":           ctx.Request.Body,
+		"Header":         ctx.Request.Header,
+		"Form":           ctx.Request.Form,
+		"QueryTradeList": ctx.Request.URL.Query(),
+		"error":          errMsg,
 	})
 	response := Response{
 		Code: code,

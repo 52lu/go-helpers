@@ -13,7 +13,7 @@ import (
 type {{.DaoName}} struct {
 	ctx         context.Context
 	connect 	*gorm.DB
-	Query       query.I{{.ModelName}}Do
+	QueryTradeList       query.I{{.ModelName}}Do
 }
 
 /*
@@ -27,11 +27,11 @@ func New{{.DaoName}}(ctx context.Context) {{.DaoName}} {
 {{if .UseGormHookDataLog}}    return {{.DaoName}}{
 		ctx:     ctx,
 		connect: query.NewWithHookConnect(ctx),
-		Query:   query.NewDaoQueryWithHookSession(ctx).{{.ModelName}},
+		QueryTradeList:   query.NewDaoQueryWithHookSession(ctx).{{.ModelName}},
 	}{{else}}    return {{.DaoName}}{
 		ctx:     ctx,
 		connect: query.NewDefaultConnect(ctx),
-		Query:   query.NewDaoQuerySession(ctx).{{.ModelName}},
+		QueryTradeList:   query.NewDaoQuerySession(ctx).{{.ModelName}},
 	}{{end}}
 }
 
@@ -42,10 +42,10 @@ func New{{.DaoName}}(ctx context.Context) {{.DaoName}} {
 * @Return {{.DaoName}}
 * @Date {{.DateTime}}
  */
-func ({{.ReceiverPre}} {{.DaoName}}) GetTransQueryDao(tx *query.Query) {{.DaoName}}  {
+func ({{.ReceiverPre}} {{.DaoName}}) GetTransQueryDao(tx *query.QueryTradeList) {{.DaoName}}  {
 	return {{.DaoName}}{
 		ctx:   {{.ReceiverPre}}.ctx,
-		Query: tx.WithContext({{.ReceiverPre}}.ctx).{{.ModelName}},
+		QueryTradeList: tx.WithContext({{.ReceiverPre}}.ctx).{{.ModelName}},
 	}
 }
 
@@ -57,6 +57,6 @@ func ({{.ReceiverPre}} {{.DaoName}}) GetTransQueryDao(tx *query.Query) {{.DaoNam
 * @Date {{.DateTime}}
  */
 func ({{.ReceiverPre}} {{.DaoName}}) Save(row ...*model.{{.ModelName}}) error {
-	return {{.ReceiverPre}}.Query.Save(row...)
+	return {{.ReceiverPre}}.QueryTradeList.Save(row...)
 }
 `

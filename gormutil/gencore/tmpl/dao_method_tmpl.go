@@ -13,7 +13,7 @@ const DaoCommonByIdMethod = `
 * @Date {{.DateTime}}
  */
 func ({{.ReceiverPre}} {{.DaoName}}) UpdateById(id int64,values interface{}) error  {
-	_, err := {{.ReceiverPre}}.Query.Where(query.{{.ModelName}}.ID.Eq(id)).Updates(values)
+	_, err := {{.ReceiverPre}}.QueryTradeList.Where(query.{{.ModelName}}.ID.Eq(id)).Updates(values)
 	return err
 }
 
@@ -27,7 +27,7 @@ func ({{.ReceiverPre}} {{.DaoName}}) UpdateById(id int64,values interface{}) err
 * @Date {{.DateTime}}
  */
 func ({{.ReceiverPre}} {{.DaoName}}) FindById(id int64) (*model.{{.ModelName}}, error)  {
-	return {{.ReceiverPre}}.Query.FindById(id)
+	return {{.ReceiverPre}}.QueryTradeList.FindById(id)
 }
 
 /*
