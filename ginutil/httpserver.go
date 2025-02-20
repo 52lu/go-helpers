@@ -132,7 +132,7 @@ func (h *httpServer) Start() {
 
 	// 创建服务
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", h.config.Port),
+		Addr:    fmt.Sprintf("0.0.0.0:%v", h.config.Port),
 		Handler: engine,
 	}
 	// Initializing the server in a goroutine so that
